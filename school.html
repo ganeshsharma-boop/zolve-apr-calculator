@@ -1,0 +1,233 @@
+https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Select Your School · Zolve</title>
+<style>
+:root{--black:#0A0A0A;--orange:#F47216;--orange-soft:#FFE5D5;--bg:#F8F8F6;--card:#FFFFFF;--text:#1A1A1A;--muted:#6B6B6B;--border:#E8E8E5;--success:#00A968;--success-soft:#E8F8F1;--danger:#E84A3B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+.nav{background:var(--black);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{color:var(--orange);font-weight:800;font-size:20px;letter-spacing:-0.5px}
+.nav-tag{color:#fff;opacity:0.6;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.container{max-width:720px;margin:40px auto;padding:0 16px}
+.card{background:var(--card);border-radius:16px;padding:32px 28px;box-shadow:0 8px 32px rgba(0,0,0,0.06);margin-bottom:18px}
+.card h1{font-size:24px;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px}
+.card h1 .y{color:var(--orange)}
+.subtitle{color:var(--muted);font-size:14px;margin-bottom:20px;line-height:1.55}
+.school-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+@media(max-width:540px){.school-grid{grid-template-columns:1fr}}
+.school-btn{padding:18px;border:1.5px solid var(--border);background:#fff;border-radius:12px;cursor:pointer;text-align:left;font-family:inherit;transition:all 0.15s;display:flex;flex-direction:column;gap:4px}
+.school-btn:hover{border-color:var(--orange);transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,0.06)}
+.school-btn .school-name{font-size:15px;font-weight:700;color:var(--text)}
+.school-btn .school-sub{font-size:11px;color:var(--muted)}
+.other-btn{padding:18px;border:1.5px dashed var(--border);background:#FAFAF8;border-radius:12px;cursor:pointer;text-align:center;font-family:inherit;width:100%;margin-top:10px;font-size:14px;font-weight:600;color:var(--muted)}
+.other-btn:hover{border-color:var(--orange);color:var(--orange)}
+.section{display:none}
+.section.active{display:block}
+.input-group{margin-bottom:16px}
+.input-group label{display:block;font-size:12px;font-weight:600;margin-bottom:6px}
+.input-group input,.input-group select{width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(--border);border-radius:9px;background:#fff;font-family:inherit}
+.input-group input:focus,.input-group select:focus{outline:none;border-color:var(--black)}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.profile-grid .full{grid-column:1/-1}
+@media(max-width:540px){.profile-grid{grid-template-columns:1fr}}
+.btn{display:block;width:100%;padding:14px;font-size:15px;font-weight:700;border-radius:10px;border:none;cursor:pointer;font-family:inherit;text-align:center;margin-top:16px}
+.btn-primary{background:var(--black);color:var(--orange)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.btn-link{background:none;color:var(--muted);font-size:13px;font-weight:600;text-decoration:underline;padding:8px;margin-top:4px;width:100%;border:none;cursor:pointer;font-family:inherit}
+.notice{padding:12px;border-radius:8px;font-size:13px;margin-top:14px;line-height:1.5;display:none}
+.notice.show{display:block}
+.notice.err{background:#FCE9E6;color:#9a4a3f;border-left:3px solid var(--danger)}
+.notice.ok{background:var(--success-soft);color:#006B40;border-left:3px solid var(--success)}
+.invite-banner{background:var(--orange-soft);color:#7A3B0E;padding:12px 16px;border-radius:9px;font-size:13px;margin-bottom:18px;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;color:var(--muted);font-size:11px}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <span class="nav-brand">Zolve</span>
+  <span class="nav-tag">Step 2 · Choose your school</span>
+</nav>
+
+<div class="container">
+  <div class="card">
+
+    <div class="section active" id="secSchool">
+      <h1>Which <span class="y">school</span>?</h1>
+      <p class="subtitle">The calculator is currently invite-only for M7 MBA students. Pick yours below.</p>
+
+      <div class="school-grid" id="schoolGrid"></div>
+      <button class="other-btn" onclick="showOther()">Not on the list? Request access</button>
+    </div>
+
+    <div class="section" id="secProfile">
+      <h1>A few quick <span class="y">details</span></h1>
+      <p class="subtitle">Tell us a bit about yourself and your loan, so we can show you the most accurate APR and help you better in your consultation.</p>
+
+      <div class="profile-grid">
+        <div class="input-group"><label>First name</label><input type="text" id="firstName" placeholder="First name"></div>
+        <div class="input-group"><label>Last name</label><input type="text" id="lastName" placeholder="Last name"></div>
+        <div class="input-group">
+          <label>Course</label>
+          <select id="course"><option value="MBA">MBA</option><option value="Other Masters">Other Masters</option></select>
+        </div>
+        <div class="input-group">
+          <label>Intake year</label>
+          <select id="intake"><option value="">Select</option><option value="Fall 2026">Fall 2026</option><option value="Fall 2027">Fall 2027</option><option value="Fall 2028">Fall 2028</option></select>
+        </div>
+        <div class="input-group full">
+          <label>Current loan status</label>
+          <select id="loanStatus">
+            <option value="">Select</option>
+            <option value="Already sanctioned">I already have a sanction letter</option>
+            <option value="In process">My loan is in process</option>
+            <option value="Exploring">I am still exploring lenders</option>
+            <option value="Not started">I have not started yet</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="saveProfile()">Continue to calculator</button>
+      <button class="btn-link" onclick="backToSchool()">Change school</button>
+      <div class="notice" id="profileNotice"></div>
+    </div>
+
+    <div class="section" id="secOther">
+      <h1>Request <span class="y">access</span></h1>
+      <p class="subtitle">We are opening up gradually. Tell us about your school and we will get back to you.</p>
+
+      <div class="input-group"><label>School name</label><input type="text" id="otherSchool" placeholder="e.g. Yale SOM"></div>
+      <div class="input-group"><label>Course</label><input type="text" id="otherCourse" placeholder="e.g. MBA"></div>
+      <div class="input-group"><label>Intake year</label><input type="text" id="otherIntake" placeholder="e.g. Fall 2026"></div>
+
+      <button class="btn btn-primary" onclick="requestAccess()">Submit request</button>
+      <button class="btn-link" onclick="backToSchoolFromOther()">Back to school list</button>
+      <div class="notice" id="otherNotice"></div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <p>Zolve · For M7 MBA students. Loan calculator for informational purposes only.</p>
+</footer>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec';
+
+const M7_SCHOOLS = [
+  {name:'Harvard Business School', sub:'HBS'},
+  {name:'Stanford GSB', sub:'Stanford Graduate School of Business'},
+  {name:'The Wharton School', sub:'University of Pennsylvania'},
+  {name:'Chicago Booth', sub:'University of Chicago'},
+  {name:'Kellogg School of Management', sub:'Northwestern University'},
+  {name:'MIT Sloan', sub:'Massachusetts Institute of Technology'},
+  {name:'Columbia Business School', sub:'Columbia University'}
+];
+
+let selectedSchool='';
+
+function gateAuth(){
+  const e=localStorage.getItem('zolve_auth_email');
+  const t=parseInt(localStorage.getItem('zolve_auth_time')||'0');
+  if(!e || Date.now()-t > 7*24*60*60*1000){ window.location.href='index.html'; return false; }
+  return true;
+}
+
+function renderSchools(){
+  const g=document.getElementById('schoolGrid');
+  g.innerHTML=M7_SCHOOLS.map(s=>`
+    <button class="school-btn" onclick="selectSchool('${s.name.replace(/'/g,"&#39;")}')">
+      <span class="school-name">${s.name}</span>
+      <span class="school-sub">${s.sub}</span>
+    </button>`).join('');
+}
+
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectSchool(name){
+  selectedSchool=name;
+  showSection('secProfile');
+}
+
+function showOther(){ showSection('secOther'); }
+function backToSchool(){ showSection('secSchool'); }
+function backToSchoolFromOther(){ showSection('secSchool'); }
+
+function showNotice(id, msg, type){
+  const n=document.getElementById(id);
+  n.className='notice show '+type;
+  n.innerHTML=msg;
+}
+
+async function callBackend(action, payload){
+  if(APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec'){
+    await new Promise(r=>setTimeout(r,400));
+    return {ok:true, demo:true};
+  }
+  try{
+    const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
+    return await r.json();
+  }catch(e){ return {ok:false, error:'Network error.'}; }
+}
+
+async function saveProfile(){
+  const firstName=document.getElementById('firstName').value.trim();
+  const lastName=document.getElementById('lastName').value.trim();
+  const course=document.getElementById('course').value;
+  const intake=document.getElementById('intake').value;
+  const loanStatus=document.getElementById('loanStatus').value;
+
+  if(!firstName || !lastName){ showNotice('profileNotice','Please enter your name.','err'); return; }
+  if(!intake){ showNotice('profileNotice','Please select your intake year.','err'); return; }
+  if(!loanStatus){ showNotice('profileNotice','Please select your loan status.','err'); return; }
+
+  const profile={
+    email:localStorage.getItem('zolve_auth_email'),
+    phone:localStorage.getItem('zolve_auth_phone'),
+    school:selectedSchool, firstName, lastName, course, intake, loanStatus
+  };
+
+  await callBackend('saveProfile', profile);
+
+  localStorage.setItem('zolve_school', selectedSchool);
+  localStorage.setItem('zolve_school_status', 'approved');
+  localStorage.setItem('zolve_profile', JSON.stringify(profile));
+
+  showNotice('profileNotice','Profile saved. Opening the calculator...','ok');
+  setTimeout(()=>{ window.location.href='calculator.html'; }, 700);
+}
+
+async function requestAccess(){
+  const school=document.getElementById('otherSchool').value.trim();
+  const course=document.getElementById('otherCourse').value.trim();
+  const intake=document.getElementById('otherIntake').value.trim();
+  if(!school){ showNotice('otherNotice','Please enter your school name.','err'); return; }
+
+  const request={
+    email:localStorage.getItem('zolve_auth_email'),
+    phone:localStorage.getItem('zolve_auth_phone'),
+    school, course, intake, requestedAt: new Date().toISOString()
+  };
+
+  await callBackend('requestAccess', request);
+  localStorage.setItem('zolve_school_status', 'pending');
+  localStorage.setItem('zolve_pending_school', school);
+
+  showNotice('otherNotice','Request submitted. Redirecting...','ok');
+  setTimeout(()=>{ window.location.href='pending.html'; }, 800);
+}
+
+window.addEventListener('load',()=>{
+  if(!gateAuth()) return;
+  renderSchools();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zolve · Education Loan APR Calculator</title>
+<style>
+:root{--black:#0A0A0A;--orange:#F47216;--orange-soft:#FFE5D5;--bg:#F8F8F6;--card:#FFFFFF;--text:#1A1A1A;--muted:#6B6B6B;--border:#E8E8E5;--success:#00A968;--success-soft:#E8F8F1;--danger:#E84A3B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+.nav{background:var(--black);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{color:var(--orange);font-weight:800;font-size:20px;letter-spacing:-0.5px}
+.nav-tag{color:#fff;opacity:0.6;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.container{max-width:480px;margin:40px auto;padding:0 16px}
+.invite-banner{background:var(--orange-soft);color:#7A3B0E;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:600;text-align:center;margin-bottom:16px}
+.card{background:var(--card);border-radius:16px;padding:32px 28px;box-shadow:0 8px 32px rgba(0,0,0,0.06)}
+.card h1{font-size:24px;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px}
+.card h1 .y{color:var(--orange)}
+.subtitle{color:var(--muted);font-size:14px;margin-bottom:24px;line-height:1.55}
+.steps{display:flex;gap:6px;margin-bottom:24px}
+.step{flex:1;height:4px;background:var(--border);border-radius:2px}
+.step.active{background:var(--orange)}
+.step.done{background:var(--success)}
+.input-group{margin-bottom:16px}
+.input-group label{display:block;font-size:12px;font-weight:600;margin-bottom:6px}
+.input-group input,.input-group select{width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(--border);border-radius:9px;background:#fff;font-family:inherit}
+.input-group input:focus,.input-group select:focus{outline:none;border-color:var(--black)}
+.input-group .hint{font-size:11px;color:var(--muted);margin-top:5px}
+.phone-row{display:flex;gap:8px}
+.phone-row select{width:100px;flex-shrink:0}
+.phone-row input{flex:1}
+.btn{display:block;width:100%;padding:14px;font-size:15px;font-weight:700;border-radius:10px;border:none;cursor:pointer;font-family:inherit;text-align:center;margin-top:8px}
+.btn-primary{background:var(--black);color:var(--orange)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.btn-link{background:none;color:var(--muted);font-size:13px;font-weight:600;text-decoration:underline;padding:8px;margin-top:4px}
+.notice{padding:12px;border-radius:8px;font-size:13px;margin-top:14px;line-height:1.5;display:none}
+.notice.show{display:block}
+.notice.err{background:#FCE9E6;color:#9a4a3f;border-left:3px solid var(--danger)}
+.notice.ok{background:var(--success-soft);color:#006B40;border-left:3px solid var(--success)}
+.notice.info{background:#FFF8E5;color:#8B6914;border-left:3px solid #E8A317}
+.section{display:none}
+.section.active{display:block}
+.otp-input{font-size:22px;text-align:center;letter-spacing:8px;font-weight:700;font-family:'SF Mono',Consolas,monospace}
+.privacy{font-size:11px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;color:var(--muted);font-size:11px}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <span class="nav-brand">Zolve</span>
+  <span class="nav-tag">APR Calculator · Invite Only</span>
+</nav>
+
+<div class="container">
+  <div class="invite-banner">Currently invite-only for M7 MBA students</div>
+
+  <div class="card">
+    <div class="steps">
+      <div class="step active" id="s1"></div>
+      <div class="step" id="s2"></div>
+    </div>
+
+    <div class="section active" id="sec1">
+      <h1>See your <span class="y">true loan cost</span></h1>
+      <p class="subtitle">Built for M7 MBA students heading to the US. Enter your details below to get verified access.</p>
+
+      <div class="input-group">
+        <label>Email address</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+
+      <div class="input-group">
+        <label>Mobile number</label>
+        <div class="phone-row">
+          <select id="countryCode">
+            <option value="+91">+91 India</option>
+            <option value="+1">+1 USA</option>
+            <option value="+44">+44 UK</option>
+            <option value="+971">+971 UAE</option>
+            <option value="+65">+65 Singapore</option>
+          </select>
+          <input type="tel" id="phone" placeholder="10-digit number" autocomplete="tel">
+        </div>
+        <div class="hint">We use this to follow up about your consultation. Verification is done over email.</div>
+      </div>
+
+      <button class="btn btn-primary" id="btnSendOTP" onclick="sendOTP()">Send verification code</button>
+      <div class="notice" id="notice1"></div>
+      <div class="privacy">By continuing, you agree we may contact you about your loan and Zolve products. We will not share your details with third parties.</div>
+    </div>
+
+    <div class="section" id="sec2">
+      <h1>Check your <span class="y">email</span></h1>
+      <p class="subtitle">We have sent a 6-digit code to <strong id="emailDisplay"></strong>. Enter it below to continue.</p>
+
+      <div class="input-group">
+        <label>Email verification code</label>
+        <input type="text" id="emailOtp" class="otp-input" maxlength="6" placeholder="000000" inputmode="numeric">
+      </div>
+
+      <button class="btn btn-primary" onclick="verifyEmailOTP()">Verify and continue</button>
+      <button class="btn btn-link" onclick="resendEmailOTP()">Resend code</button>
+      <button class="btn btn-link" onclick="goBack(1)">Change email</button>
+      <div class="notice" id="notice2"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <p>Zolve · For M7 MBA students. Loan calculator for informational purposes only.</p>
+</footer>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec';
+const DEMO_EMAIL_CODE = '123456';
+
+let currentEmail='', currentPhone='', currentCountryCode='';
+
+function showSection(n){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec'+n).classList.add('active');
+  for(let i=1;i<=2;i++){
+    const el=document.getElementById('s'+i);
+    el.classList.remove('active','done');
+    if(i<n) el.classList.add('done');
+    if(i===n) el.classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showNotice(id, msg, type){
+  const n=document.getElementById('notice'+id);
+  n.className='notice show '+type;
+  n.innerHTML=msg;
+}
+
+function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
+function isPhone(s){ return /^\d{7,15}$/.test(s); }
+
+async function callBackend(action, payload){
+  if(APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec'){
+    await new Promise(r=>setTimeout(r,500));
+    return {ok:true, demo:true};
+  }
+  try{
+    const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
+    return await r.json();
+  }catch(e){ return {ok:false, error:'Network error. Please try again.'}; }
+}
+
+async function sendOTP(){
+  const email=document.getElementById('email').value.trim().toLowerCase();
+  const phone=document.getElementById('phone').value.trim();
+  const cc=document.getElementById('countryCode').value;
+  if(!isEmail(email)){ showNotice(1,'Please enter a valid email address.','err'); return; }
+  if(!isPhone(phone)){ showNotice(1,'Please enter a valid phone number.','err'); return; }
+
+  currentEmail=email; currentPhone=phone; currentCountryCode=cc;
+  document.getElementById('emailDisplay').textContent=email;
+
+  const btn=document.getElementById('btnSendOTP');
+  btn.disabled=true; btn.textContent='Sending...';
+
+  const r=await callBackend('requestEmailOTP',{email,phone:cc+phone});
+  btn.disabled=false; btn.textContent='Send verification code';
+
+  if(r.ok){ showSection(2); showNotice(2,'For demo: use code <strong>'+DEMO_EMAIL_CODE+'</strong>','info'); }
+  else { showNotice(1, r.error||'Something went wrong. Please try again.','err'); }
+}
+
+async function verifyEmailOTP(){
+  const code=document.getElementById('emailOtp').value.trim();
+  if(code.length!==6){ showNotice(2,'Please enter the 6-digit code.','err'); return; }
+
+  const r=await callBackend('verifyEmailOTP',{email:currentEmail, code});
+  const valid = (r.ok && !r.demo) || (r.demo && code===DEMO_EMAIL_CODE);
+  if(!valid){ showNotice(2,'Invalid code. Please try again.','err'); return; }
+
+  localStorage.setItem('zolve_auth_email', currentEmail);
+  localStorage.setItem('zolve_auth_phone', currentCountryCode+currentPhone);
+  localStorage.setItem('zolve_auth_time', Date.now().toString());
+
+  showNotice(2,'Verified. Redirecting...','ok');
+  setTimeout(()=>{ window.location.href='school.html'; },700);
+}
+
+function resendEmailOTP(){ showNotice(2,'New code sent. Check your email.','info'); }
+function goBack(n){ showSection(n); }
+
+window.addEventListener('load',()=>{
+  const e=localStorage.getItem('zolve_auth_email');
+  const t=parseInt(localStorage.getItem('zolve_auth_time')||'0');
+  if(e && Date.now()-t < 7*24*60*60*1000){
+    const schoolStatus=localStorage.getItem('zolve_school_status');
+    if(schoolStatus==='approved') window.location.href='calculator.html';
+    else if(schoolStatus==='pending') window.location.href='pending.html';
+    else window.location.href='school.html';
+  }
+});
+</script>
+</body>
+</html>

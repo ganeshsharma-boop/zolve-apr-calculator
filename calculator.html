@@ -1,0 +1,607 @@
+https://calendar.app.google/4yPGrMHNgA6oARSK9<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>True APR Calculator · Zolve</title>
+<style>
+:root{--black:#0A0A0A;--orange:#F47216;--orange-soft:#FFE5D5;--bg:#F8F8F6;--card:#FFFFFF;--text:#1A1A1A;--muted:#6B6B6B;--border:#E8E8E5;--success:#00A968;--success-soft:#E8F8F1;--warning:#E8A317;--danger:#E84A3B}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{position:relative}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+.nav{background:var(--black);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;z-index:10}
+.nav-brand{color:var(--orange);font-weight:800;font-size:20px;letter-spacing:-0.5px}
+.nav-right{display:flex;align-items:center;gap:14px}
+.nav-user{color:#fff;opacity:0.8;font-size:12px}
+.nav-link{color:#fff;opacity:0.7;font-size:12px;text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit}
+.hero{background:var(--black);color:#fff;padding:28px 24px 50px;text-align:center}
+.hero h1{font-size:clamp(22px,4vw,30px);font-weight:800;line-height:1.2;margin-bottom:10px;letter-spacing:-0.5px}
+.hero h1 .y{color:var(--orange)}
+.hero p{font-size:14px;opacity:0.82;max-width:600px;margin:0 auto}
+.container{max-width:780px;margin:-30px auto 48px;padding:0 16px;position:relative;z-index:2}
+.card{background:var(--card);border-radius:16px;padding:28px;box-shadow:0 8px 32px rgba(0,0,0,0.06);margin-bottom:18px;position:relative}
+.card h2{font-size:19px;font-weight:700;margin-bottom:4px;letter-spacing:-0.3px}
+.subtitle{color:var(--muted);font-size:13px;margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}.card{padding:22px 18px}}
+.input-group{margin-bottom:4px}
+.input-group label{display:block;font-size:12px;font-weight:600;margin-bottom:5px}
+.input-group .hint{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px}
+.input-group input,.input-group select{width:100%;padding:11px 13px;font-size:14px;border:1.5px solid var(--border);border-radius:9px;background:#fff;font-family:inherit}
+.input-group input:focus,.input-group select:focus{outline:none;border-color:var(--black)}
+.full{grid-column:1/-1}
+.field-note{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
+.moratorium-detail{margin-top:10px;padding:14px;background:var(--orange-soft);border-radius:9px;font-size:12px;color:#7A3B0E;line-height:1.55;display:none}
+.moratorium-detail.show{display:block}
+.moratorium-detail label{font-size:12px;font-weight:600;color:#7A3B0E;display:block;margin-bottom:5px}
+.moratorium-detail input{width:100%;max-width:300px;padding:9px 12px;font-size:13px;border:1.5px solid #E8C5A8;border-radius:8px;background:#fff;font-family:inherit;margin-top:4px}
+.section-divider{margin:22px 0 10px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.tranche-head{display:grid;grid-template-columns:24px 1fr 1fr 32px;gap:8px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.tranche-row{display:grid;grid-template-columns:24px 1fr 1fr 32px;gap:8px;align-items:center;margin-bottom:8px}
+.tranche-row .tnum{font-size:12px;font-weight:700;color:var(--muted);text-align:center}
+.tranche-row input{width:100%;padding:9px 11px;font-size:13px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit}
+.tranche-row .tdel{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1}
+.tranche-row .tdel:hover{color:var(--danger)}
+.add-tranche{background:#FAFAF8;border:1.5px dashed var(--border);border-radius:8px;padding:9px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;width:100%;font-family:inherit;margin-top:4px}
+.add-tranche:hover{border-color:var(--orange);color:var(--orange)}
+.tranche-sum{font-size:12px;color:var(--muted);margin-top:8px;text-align:right}
+.tranche-sum strong{color:var(--text)}
+.fee-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#FAFAF8;border-radius:9px;margin-bottom:6px;flex-wrap:wrap}
+.fee-label{font-weight:600;font-size:13px;flex:1;min-width:130px}
+.fee-row input{width:140px;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:6px;font-family:inherit}
+.fee-hint{font-size:11px;color:var(--muted);width:100%;margin-top:2px}
+.toggle-pills{display:flex;gap:8px;background:#FAFAF8;padding:5px;border-radius:10px;margin-top:6px}
+.toggle-pills button{flex:1;padding:10px;border:none;background:transparent;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--muted);transition:all 0.12s}
+.toggle-pills button.on{background:var(--black);color:var(--orange)}
+.btn{display:inline-block;padding:13px 26px;font-size:15px;font-weight:700;border-radius:10px;border:none;cursor:pointer;font-family:inherit;text-align:center;width:100%}
+.btn-primary{background:var(--black);color:var(--orange)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,0.15)}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-orange:hover{background:#d8620e}
+.btn-link{background:none;color:var(--muted);font-size:13px;font-weight:600;text-decoration:underline;padding:8px;width:100%;border:none;cursor:pointer;font-family:inherit;margin-top:6px}
+.results{display:none}
+.results.show{display:block}
+.apr-headline{background:var(--black);color:#fff;padding:24px;border-radius:12px;text-align:center;margin:4px 0 16px}
+.apr-headline .label{font-size:11px;opacity:0.7;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.apr-headline .value{font-size:44px;font-weight:800;color:var(--orange);line-height:1;margin:6px 0;letter-spacing:-1px}
+.apr-headline .compare{font-size:13px;opacity:0.85}
+.apr-ladder{display:flex;justify-content:space-around;gap:8px;margin:16px 0;flex-wrap:wrap}
+.apr-step{flex:1;min-width:130px;background:#FAFAF8;border-radius:10px;padding:14px;text-align:center}
+.apr-step .s-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;line-height:1.3}
+.apr-step .s-val{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.apr-step.advertised .s-val{color:var(--muted)}
+.apr-step.base .s-val{color:var(--warning)}
+.apr-step.forex .s-val{color:var(--danger)}
+.result-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;gap:12px}
+.result-row:last-child{border-bottom:none}
+.result-label{color:var(--muted)}
+.result-value{font-weight:600;text-align:right}
+.result-value.big{color:var(--orange);font-size:16px}
+.insight{padding:14px;border-radius:10px;font-size:13px;margin-top:16px;border-left:3px solid;line-height:1.55}
+.insight.warn{background:#FFF8E5;border-left-color:var(--warning);color:#8B6914}
+.insight.ok{background:var(--success-soft);border-left-color:var(--success);color:#006B40}
+.cta-card{background:linear-gradient(135deg,#F47216 0%,#d8620e 100%);color:#fff;border-radius:16px;padding:28px;margin-bottom:18px;text-align:center}
+.cta-card h2{color:#fff;font-size:20px;font-weight:800;margin-bottom:8px}
+.cta-card p{font-size:14px;opacity:0.95;margin-bottom:18px;line-height:1.5}
+.cta-card .btn-cta{background:#fff;color:var(--black);padding:14px 28px;display:inline-block;border-radius:10px;font-weight:700;font-size:15px;text-decoration:none;transition:transform 0.1s}
+.cta-card .btn-cta:hover{transform:translateY(-2px)}
+.guide h2{font-size:19px;font-weight:700;margin-bottom:4px}
+.guide-table{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.guide-col{display:grid;grid-template-columns:150px 1fr 1fr 1fr;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.guide-col.head{background:var(--black);border:none}
+.guide-col.head .g-cell{color:var(--orange);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.5px}
+.g-cell{padding:13px 14px;font-size:13px;line-height:1.5;border-right:1px solid var(--border)}
+.g-cell:last-child{border-right:none}
+.g-opt{font-weight:700;background:#FAFAF8}
+.g-good{color:#1d6b48}
+.g-bad{color:#9a4a3f}
+@media(max-width:680px){
+  .guide-col{grid-template-columns:1fr}
+  .guide-col.head{display:none}
+  .g-cell{border-right:none;border-bottom:1px solid var(--border)}
+  .g-cell:last-child{border-bottom:none}
+  .g-cell[data-label]::before{content:attr(data-label);display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:3px}
+  .g-opt{font-size:15px}
+}
+.explainer-card{background:#FAFAF8;border-radius:10px;padding:18px;font-size:13px;line-height:1.65;margin-top:12px}
+.explainer-card strong{color:var(--black)}
+.depreciation-note{background:#FAFAF8;border-radius:10px;padding:16px 18px;font-size:13px;line-height:1.6;margin-top:18px}
+.depreciation-note strong{color:var(--black)}
+.fx-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+.fx-table th{text-align:left;padding:8px 12px;background:var(--black);color:var(--orange);font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
+.fx-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.fx-table tr:last-child td{border-bottom:none}
+.fx-table .fx-rate{font-weight:700;font-family:'SF Mono',Consolas,monospace}
+.fx-disclaimer{font-size:11px;color:var(--muted);margin-top:10px;font-style:italic}
+.disclaimer-card{background:#FFFEF7;border:1px solid #F0E8C8;border-radius:10px;padding:18px;font-size:11px;line-height:1.55;color:#7A6914;margin-top:18px}
+.disclaimer-card strong{color:var(--black)}
+.footer{text-align:center;padding:24px 16px 40px;color:var(--muted);font-size:11px;line-height:1.6}
+/* Watermark */
+.watermark{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;opacity:0.04;user-select:none}
+.watermark-text{position:absolute;font-size:14px;color:#000;white-space:nowrap;transform:rotate(-30deg);font-weight:600}
+@media print{ .nav,.cta-card,.btn,.btn-link,.add-tranche{display:none !important} .watermark{opacity:0.15 !important} }
+</style>
+</head>
+<body>
+<div class="watermark" id="watermark"></div>
+
+<nav class="nav">
+  <span class="nav-brand">Zolve</span>
+  <div class="nav-right">
+    <span class="nav-user" id="userEmail">—</span>
+    <button class="nav-link" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <h1>Your <span style="color:var(--orange)">true loan cost</span>, in 30 seconds</h1>
+  <p>Built for M7 MBA students. Enter your loan exactly as it appears on your sanction letter to see the APR you actually pay.</p>
+</header>
+
+<main class="container">
+
+  <div class="card">
+    <h2>Loan inputs</h2>
+    <p class="subtitle">Enter the numbers from your sanction letter. The more accurate your inputs, the closer the APR.</p>
+
+    <div class="form-grid">
+      <div class="input-group full">
+        <label>Lender name <span class="hint">(for your records)</span></label>
+        <input type="text" id="lenderName" placeholder="e.g. your bank or NBFC">
+      </div>
+      <div class="input-group">
+        <label>Interest rate <span class="hint">% per year</span></label>
+        <input type="number" id="interestRate" step="0.01" value="10.25">
+      </div>
+      <div class="input-group">
+        <label>Total tenure <span class="hint">months</span></label>
+        <input type="number" id="tenureMonths" value="120">
+      </div>
+      <div class="input-group">
+        <label>Study / moratorium <span class="hint">months</span></label>
+        <input type="number" id="moratoriumMonths" value="0">
+      </div>
+      <div class="input-group">
+        <label>Repayment option during study</label>
+        <select id="moratoriumType" onchange="onMoratoriumTypeChange()">
+          <option value="pemi">Interest Only — pay only interest while studying</option>
+          <option value="none">Immediate — pay principal + interest right away</option>
+          <option value="partial">Fixed Payment — small fixed amount while studying</option>
+          <option value="full_defer">Full Deferment — pay nothing while studying</option>
+        </select>
+      </div>
+      <div class="full">
+        <div class="moratorium-detail" id="partialDetail">
+          <label>Fixed payment per month during study (₹)</label>
+          <input type="number" id="partialAmount" value="15000">
+          Whatever interest your fixed payment does not cover is added to your principal each month, and itself earns interest.
+        </div>
+        <div class="moratorium-detail" id="pemiNote">
+          You pay the full interest each month while studying, so your principal does not grow. Your EMI after study is based on the original amount borrowed.
+        </div>
+        <div class="moratorium-detail" id="deferNote">
+          You pay nothing while studying. Interest accrues and is added to your principal every month, and that added interest itself earns interest. This is the easiest option during study but the most expensive overall. No lender offers an interest-free period: if you do not pay it, you owe it.
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider">Disbursal tranches</div>
+    <p class="subtitle" style="margin-bottom:12px">Loans are usually drawn in stages, often once per semester. Enter each expected disbursal and the month it lands (month 1 = your first draw). Interest accrues on each tranche only from the month it is drawn.</p>
+    <div class="tranche-head"><span></span><span>Amount (₹)</span><span>Month drawn</span><span></span></div>
+    <div id="trancheContainer"></div>
+    <button class="add-tranche" onclick="addTranche()">+ Add another tranche</button>
+    <div class="tranche-sum">Total disbursal: <strong id="trancheSum">—</strong></div>
+
+    <div class="section-divider">Fees</div>
+    <div class="fee-row">
+      <span class="fee-label">Processing fee (₹)</span>
+      <input type="number" id="feeProcessing" value="">
+    </div>
+    <div class="fee-row">
+      <span class="fee-label">Insurance premium (₹)</span>
+      <input type="number" id="feeInsurance" value="" placeholder="leave blank if none">
+      <span class="fee-hint">Loan insurance is generally 1.5–2% of the loan amount. Enter the total premium from your sanction letter, or your own estimate.</span>
+    </div>
+    <div class="fee-row">
+      <span class="fee-label">Other charges (₹)</span>
+      <input type="number" id="feeOther" value="">
+    </div>
+
+    <div class="section-divider">Currency &amp; money transfer</div>
+    <div class="form-grid">
+      <div class="input-group">
+        <label>Rupee depreciation <span class="hint">% per year</span></label>
+        <input type="number" id="forexCAGR" step="0.01" value="4.25">
+        <div class="field-note">Historical average is roughly 4.0–4.5% per year. See the depreciation history below.</div>
+      </div>
+      <div class="input-group">
+        <label>Today's USD → INR rate</label>
+        <input type="number" id="usdInrToday" step="0.01" value="90">
+      </div>
+      <div class="input-group">
+        <label>Transfer markup <span class="hint">₹ per USD</span></label>
+        <input type="number" id="remitPerUSD" step="0.05" value="0.75">
+        <div class="field-note">Banks typically charge ₹0.50–₹1.00 per dollar over the spot rate when sending money across the border.</div>
+      </div>
+      <div class="input-group">
+        <label>How will you repay?</label>
+        <div class="toggle-pills" id="repaySource">
+          <button class="on" data-val="inr" onclick="setRepaySource('inr')">From INR income</button>
+          <button data-val="usd" onclick="setRepaySource('usd')">From USD income</button>
+        </div>
+        <div class="field-note">If you repay from dollars earned abroad, each EMI also carries the transfer markup back to India.</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="calculate()" style="margin-top:18px">Calculate true APR</button>
+  </div>
+
+  <div class="card results" id="results">
+    <h2>Your true cost</h2>
+    <p class="subtitle">The advertised rate is only the starting point. Here is what the loan actually costs.</p>
+
+    <div class="apr-headline">
+      <div class="label">True Annual Percentage Rate</div>
+      <div class="value" id="aprValue">—</div>
+      <div class="compare" id="aprCompare">—</div>
+    </div>
+
+    <div class="apr-ladder">
+      <div class="apr-step advertised"><div class="s-label">Advertised</div><div class="s-val" id="ladderAdv">—</div></div>
+      <div class="apr-step base"><div class="s-label">With fees + tranches</div><div class="s-val" id="ladderBase">—</div></div>
+      <div class="apr-step forex"><div class="s-label">Incl. forex + transfer</div><div class="s-val" id="ladderForex">—</div></div>
+    </div>
+
+    <div class="result-row"><span class="result-label">Monthly EMI (after study)</span><span class="result-value big" id="rEMI">—</span></div>
+    <div class="result-row"><span class="result-label">Advertised interest rate</span><span class="result-value" id="rRate">—</span></div>
+    <div class="result-row"><span class="result-label">Total disbursed (base)</span><span class="result-value" id="rDisbursed">—</span></div>
+    <div class="result-row"><span class="result-label">Forex surcharge (depreciation)</span><span class="result-value" id="rForex">—</span></div>
+    <div class="result-row"><span class="result-label">Money-transfer charges</span><span class="result-value" id="rRemit">—</span></div>
+    <div class="result-row"><span class="result-label">Total upfront fees</span><span class="result-value" id="rFees">—</span></div>
+    <div class="result-row"><span class="result-label">Principal when repayment starts</span><span class="result-value" id="rCap">—</span></div>
+    <div class="result-row"><span class="result-label">Paid during study</span><span class="result-value" id="rMoraInt">—</span></div>
+    <div class="result-row"><span class="result-label">Total amount payable</span><span class="result-value" id="rTotalPay">—</span></div>
+
+    <div class="insight" id="insight"></div>
+  </div>
+
+  <div class="cta-card" id="ctaCard" style="display:none">
+    <h2>Want to explore lower rates?</h2>
+    <p>Book a 30-minute consultation with our team. We will look at your sanction letter, walk through your options across lenders, and help you decide what is best. No fees, no pressure.</p>
+    <a class="btn-cta" href="https://calendar.app.google/https://calendar.app.google/4yPGrMHNgA6oARSK9" target="_blank" onclick="trackBooking()">Book a consultation</a>
+  </div>
+
+  <div class="card guide">
+    <h2>What is APR and why does it matter?</h2>
+    <div class="explainer-card">
+      <strong>APR is the total cost of borrowing money, expressed as a yearly percentage.</strong> It includes not just the interest rate but also other mandatory fees associated with the loan, such as processing fees, origination fees, and other charges.
+      <br><br>
+      APR gives you a clearer picture of the true cost of the loan. It allows you to compare different loan offers more accurately, as it considers all costs involved.
+      <br><br>
+      <strong>How to use this calculator:</strong> simply input your estimated loan amount, interest rate, and loan term, along with the other requested information. The calculator will then estimate your monthly EMI, total interest paid, the overall amount you will repay, and the APR percentage.
+    </div>
+  </div>
+
+  <div class="card guide">
+    <h2>Understanding your repayment options</h2>
+    <p class="subtitle">Most lenders offer four ways to handle payments while you are still in school. Each trades off how much you pay now against how much the loan costs in total. Remember: no lender offers a free period — interest you do not pay is added to what you owe.</p>
+    <div class="guide-table">
+      <div class="guide-col head">
+        <div class="g-cell">Option</div><div class="g-cell">What it means</div><div class="g-cell">Benefits</div><div class="g-cell">Drawbacks</div>
+      </div>
+      <div class="guide-col">
+        <div class="g-cell g-opt">Interest Only</div>
+        <div class="g-cell" data-label="What it means">Pay only the interest on your loan while you are still in school.</div>
+        <div class="g-cell g-good" data-label="Benefits">Reduces overall cost by preventing interest capitalisation. Payments stay moderate and manageable.</div>
+        <div class="g-cell g-bad" data-label="Drawbacks">Payments are still required while studying, which can be challenging for some students.</div>
+      </div>
+      <div class="guide-col">
+        <div class="g-cell g-opt">Immediate</div>
+        <div class="g-cell" data-label="What it means">Start paying both principal and interest right away.</div>
+        <div class="g-cell g-good" data-label="Benefits">Lowest overall cost — the principal starts reducing early, so far less interest over the life of the loan.</div>
+        <div class="g-cell g-bad" data-label="Drawbacks">Requires the highest payments while in school, which may not be feasible for everyone.</div>
+      </div>
+      <div class="guide-col">
+        <div class="g-cell g-opt">Fixed Payment</div>
+        <div class="g-cell" data-label="What it means">Pay a small, fixed monthly amount on the loan while in school.</div>
+        <div class="g-cell g-good" data-label="Benefits">Simple, predictable payment. Reduces overall cost a little by chipping at interest or principal.</div>
+        <div class="g-cell g-bad" data-label="Drawbacks">Minimal cost reduction versus other options, and still requires regular payments during study.</div>
+      </div>
+      <div class="guide-col">
+        <div class="g-cell g-opt">Full Deferment</div>
+        <div class="g-cell" data-label="What it means">No payments until six to nine months after you leave school.</div>
+        <div class="g-cell g-good" data-label="Benefits">Eases financial pressure so you can focus on studies. Best when you cannot afford payments while in school.</div>
+        <div class="g-cell g-bad" data-label="Drawbacks">No reduction in loan cost. Interest accrues and capitalises during deferment, raising the total you repay.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card guide">
+    <h2>Why currency matters</h2>
+    <p class="subtitle">Your loan is in rupees, but your school is paid in dollars. Two separate currency costs raise your real APR above the advertised rate.</p>
+    <div class="depreciation-note">
+      <strong>1. Rupee depreciation.</strong> The Indian Rupee has weakened against the US Dollar by roughly 4.0% to 4.5% per year on average over the last five years, driven by structural trade deficits and the inflation gap between the two economies. Each later semester's fees therefore cost more rupees than the first, so you borrow more.
+      <br><br>
+      <strong>2. Money-transfer charges.</strong> Every time money crosses the border there is a markup of roughly ₹0.50 to ₹1.00 per dollar over the spot rate. This applies when your loan's rupees are converted to pay the school, and again later if you earn in dollars and send money home to pay your EMIs.
+    </div>
+    <table class="fx-table">
+      <thead><tr><th>Year</th><th>Average INR per USD</th></tr></thead>
+      <tbody>
+        <tr><td>2021</td><td class="fx-rate">~73.94</td></tr>
+        <tr><td>2022</td><td class="fx-rate">~78.60</td></tr>
+        <tr><td>2023</td><td class="fx-rate">~82.57</td></tr>
+        <tr><td>2024</td><td class="fx-rate">~83.68</td></tr>
+        <tr><td>2025</td><td class="fx-rate">~89.00</td></tr>
+        <tr><td>2026 (Jan–May)</td><td class="fx-rate">~93.00–95.00</td></tr>
+      </tbody>
+    </table>
+    <p class="fx-disclaimer">Figures shown for educational purposes only, to illustrate the long-term trend. Past movement does not predict future rates.</p>
+  </div>
+
+  <div class="card">
+    <h2>Disclaimer</h2>
+    <div class="disclaimer-card">
+      <strong>Loan Calculator (the "Calculator")</strong> is provided for informational purposes only and may be used as a general guide only and is provided "as is". In addition to liability clauses in the Terms of Use, which also governs the display and use of the tool, Zolve makes no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability of the tool or the information it provides and is not responsible or liable for any errors in or omissions from the tool and the results provided.
+      <br><br>
+      The Calculator may only be used for your personal use and may not be used for any commercial or business purposes. The results do not constitute an offer for a loan or imply in any way that the user of the Calculator will be eligible for a loan with Zolve or will receive a loan offer from Zolve's lending partners, if they apply. The calculation does not include all mandatory fees usually charged by Zolve or take into account any changes to the interest rate or any missed, short or additional payments made on a loan.
+      <br><br>
+      <strong>*Loan and promotion offers are subject to our lending partners' eligibility, funding, and credit assessment criteria.</strong>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Zolve · Education Loan APR Calculator. For informational purposes only.</p>
+</footer>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec';
+const BOOKING_URL = 'https://calendar.app.google/https://calendar.app.google/4yPGrMHNgA6oARSK9';
+
+// ============================================================
+// AUTH GATE
+// ============================================================
+function gateAuth(){
+  const e=localStorage.getItem('zolve_auth_email');
+  const t=parseInt(localStorage.getItem('zolve_auth_time')||'0');
+  const s=localStorage.getItem('zolve_school_status');
+  if(!e || Date.now()-t > 7*24*60*60*1000){ window.location.href='index.html'; return false; }
+  if(s!=='approved'){ window.location.href=s==='pending'?'pending.html':'school.html'; return false; }
+  return true;
+}
+
+function signOut(){ localStorage.clear(); window.location.href='index.html'; }
+
+// ============================================================
+// WATERMARK (deters screenshot sharing)
+// ============================================================
+function renderWatermark(){
+  const email=localStorage.getItem('zolve_auth_email')||'guest';
+  const time=new Date().toLocaleString();
+  const txt=`Zolve · ${email} · ${time}`;
+  const w=document.getElementById('watermark');
+  let html='';
+  for(let r=0;r<10;r++){
+    for(let c=0;c<6;c++){
+      html+=`<div class="watermark-text" style="top:${r*180}px;left:${c*340}px">${txt}</div>`;
+    }
+  }
+  w.innerHTML=html;
+}
+
+// ============================================================
+// ENGINE (validated)
+// ============================================================
+function calculateEMI(p, ar, m){ if(ar===0) return p/m; const r=ar/12/100; return p*r*Math.pow(1+r,m)/(Math.pow(1+r,m)-1); }
+
+function irrAnnual(cf){
+  let rate=0.10;
+  for(let it=0; it<400; it++){
+    let npv=0,d=0;
+    for(let t=0;t<cf.length;t++){ const mr=rate/12,f=Math.pow(1+mr,t+1); npv+=cf[t]/f; d-=(t+1)*cf[t]/(f*(1+mr)); }
+    if(Math.abs(d)<1e-9) break;
+    const nr=rate-npv/d;
+    if(Math.abs(nr-rate)<1e-8) return nr*100;
+    rate=nr;
+  }
+  return rate*100;
+}
+
+function computeLoan(p){
+  const {tranches, annualRate, totalMonths, moratoriumMonths, moratoriumType, partialAmount,
+         upfrontFees, forexCAGR, remitPerUSD, usdInrToday, repaySource} = p;
+  const mr=annualRate/12/100;
+  const repay=Math.max(1,totalMonths-moratoriumMonths);
+  const T=[...tranches].filter(t=>t.amount>0).sort((a,b)=>a.month-b.month);
+  const totalDisbursed=T.reduce((s,t)=>s+t.amount,0);
+  const cagr=(forexCAGR||0)/100, fxToday=usdInrToday>0?usdInrToday:0, remit=remitPerUSD||0;
+
+  let forexSurcharge=0, outboundRemit=0;
+  const financed=T.map(t=>{
+    const dep=t.amount*cagr*((t.month-1)/12);
+    forexSurcharge+=dep;
+    if(fxToday>0) outboundRemit+=(t.amount/fxToday)*remit;
+    return {month:t.month, base:t.amount, financed:t.amount+dep};
+  });
+
+  function runLedger(useFinanced){
+    const draw=m=>financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
+    let balance=0; const outflow=new Array(totalMonths).fill(0); let moratoriumPaid=0;
+    for(let m=1;m<=moratoriumMonths;m++){
+      balance+=draw(m);
+      const interest=balance*mr;
+      let pay=0;
+      if(moratoriumType==='pemi') pay=interest;
+      else if(moratoriumType==='partial') pay=Math.min(partialAmount,interest);
+      else pay=0;
+      balance+=(interest-pay);
+      outflow[m-1]+=pay; moratoriumPaid+=pay;
+    }
+    if(moratoriumMonths===0){ balance=0; for(let m=1;m<=totalMonths;m++) balance+=draw(m); }
+    const principalAtRepayStart=balance;
+    const emi=calculateEMI(principalAtRepayStart, annualRate, repay);
+    for(let m=1;m<=repay;m++) outflow[moratoriumMonths+m-1]+=emi;
+    return {principalAtRepayStart, emi, outflow, moratoriumPaid};
+  }
+
+  const baseRun=runLedger(false), fxRun=runLedger(true);
+
+  function inboundRemitTotal(emi){
+    if(fxToday<=0 || remit<=0 || repaySource!=='usd') return 0;
+    return (emi/fxToday)*remit*repay;
+  }
+
+  function aprFor(run, includeForex){
+    const cf=new Array(totalMonths).fill(0);
+    for(const t of financed) cf[t.month-1]+=t.base;
+    if(financed.length){
+      cf[financed[0].month-1]-=upfrontFees;
+      if(includeForex) cf[financed[0].month-1]-=outboundRemit;
+    }
+    for(let m=0;m<totalMonths;m++) cf[m]-=run.outflow[m];
+    if(includeForex){
+      const per=inboundRemitTotal(run.emi)/repay;
+      for(let m=1;m<=repay;m++) cf[moratoriumMonths+m-1]-=per;
+    }
+    return irrAnnual(cf);
+  }
+
+  const aprNoFx=aprFor(baseRun,false), apr=aprFor(fxRun,true);
+  const inbound=inboundRemitTotal(fxRun.emi);
+  const totalRepay=fxRun.moratoriumPaid+fxRun.emi*repay+inbound;
+  return {emi:fxRun.emi, emiNoFx:baseRun.emi, apr, aprNoFx, principalAtRepayStart:fxRun.principalAtRepayStart,
+          totalDisbursed, forexSurcharge, outboundRemit, inboundRemit:inbound,
+          totalPayable:totalRepay, moratoriumInterestPaid:fxRun.moratoriumPaid};
+}
+
+const fmt=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+
+// ============================================================
+// TRANCHE UI
+// ============================================================
+let trancheState=[{amount:5000000,month:1},{amount:5000000,month:7},{amount:5000000,month:13},{amount:5000000,month:19}];
+let repaySource='inr';
+
+function renderTranches(){
+  document.getElementById('trancheContainer').innerHTML=trancheState.map((t,i)=>`
+    <div class="tranche-row">
+      <span class="tnum">${i+1}</span>
+      <input type="number" value="${t.amount}" oninput="updateTranche(${i},'amount',this.value)" placeholder="amount">
+      <input type="number" value="${t.month}" oninput="updateTranche(${i},'month',this.value)" placeholder="month">
+      <button class="tdel" onclick="removeTranche(${i})" title="remove">×</button>
+    </div>`).join('');
+  updateTrancheSum();
+}
+function updateTranche(i,f,v){ trancheState[i][f]=parseFloat(v)||0; updateTrancheSum(); }
+function addTranche(){ const lm=trancheState.length?Math.max(...trancheState.map(t=>t.month)):1; trancheState.push({amount:0,month:lm+6}); renderTranches(); }
+function removeTranche(i){ if(trancheState.length>1){ trancheState.splice(i,1); renderTranches(); } }
+function updateTrancheSum(){ document.getElementById('trancheSum').textContent=fmt(trancheState.reduce((s,t)=>s+(t.amount||0),0)); }
+
+function setRepaySource(v){
+  repaySource=v;
+  document.querySelectorAll('#repaySource button').forEach(b=>b.classList.toggle('on', b.getAttribute('data-val')===v));
+}
+
+function onMoratoriumTypeChange(){
+  const t=document.getElementById('moratoriumType').value;
+  document.getElementById('partialDetail').classList.toggle('show',t==='partial');
+  document.getElementById('pemiNote').classList.toggle('show',t==='pemi');
+  document.getElementById('deferNote').classList.toggle('show',t==='full_defer');
+}
+
+// ============================================================
+// CALCULATE
+// ============================================================
+async function callBackend(action, payload){
+  if(APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec'){
+    await new Promise(r=>setTimeout(r,200));
+    return {ok:true, demo:true};
+  }
+  try{
+    const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
+    return await r.json();
+  }catch(e){ return {ok:false}; }
+}
+
+function calculate(){
+  const lenderName=document.getElementById('lenderName').value.trim();
+  const annualRate=parseFloat(document.getElementById('interestRate').value);
+  const totalMonths=parseInt(document.getElementById('tenureMonths').value);
+  const moratoriumMonths=parseInt(document.getElementById('moratoriumMonths').value)||0;
+  const moratoriumType=document.getElementById('moratoriumType').value;
+  const partialAmount=parseFloat(document.getElementById('partialAmount').value)||0;
+  const forexCAGR=parseFloat(document.getElementById('forexCAGR').value)||0;
+  const usdInrToday=parseFloat(document.getElementById('usdInrToday').value)||0;
+  const remitPerUSD=parseFloat(document.getElementById('remitPerUSD').value)||0;
+  const feeProcessing=parseFloat(document.getElementById('feeProcessing').value)||0;
+  const feeInsurance=parseFloat(document.getElementById('feeInsurance').value)||0;
+  const feeOther=parseFloat(document.getElementById('feeOther').value)||0;
+  const upfrontFees=feeProcessing+feeInsurance+feeOther;
+  const tranches=trancheState.filter(t=>t.amount>0);
+  if(!annualRate||!totalMonths||!tranches.length){ alert('Please fill rate, tenure, and at least one tranche.'); return; }
+
+  const r=computeLoan({tranches,annualRate,totalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource});
+
+  document.getElementById('aprValue').textContent=r.apr.toFixed(2)+'%';
+  const diff=r.apr-annualRate;
+  document.getElementById('aprCompare').textContent=diff>0.01?'+'+diff.toFixed(2)+' points above the advertised '+annualRate.toFixed(2)+'%':'matches the advertised rate';
+  document.getElementById('ladderAdv').textContent=annualRate.toFixed(2)+'%';
+  document.getElementById('ladderBase').textContent=r.aprNoFx.toFixed(2)+'%';
+  document.getElementById('ladderForex').textContent=r.apr.toFixed(2)+'%';
+  document.getElementById('rEMI').textContent=fmt(r.emi);
+  document.getElementById('rRate').textContent=annualRate.toFixed(2)+'%';
+  document.getElementById('rDisbursed').textContent=fmt(r.totalDisbursed);
+  document.getElementById('rForex').textContent=fmt(r.forexSurcharge);
+  document.getElementById('rRemit').textContent=fmt(r.outboundRemit+r.inboundRemit)+(repaySource==='usd'?'':' (outbound only)');
+  document.getElementById('rFees').textContent=fmt(upfrontFees);
+  document.getElementById('rCap').textContent=moratoriumMonths>0?fmt(r.principalAtRepayStart):fmt(r.totalDisbursed)+' (no moratorium)';
+  document.getElementById('rMoraInt').textContent=fmt(r.moratoriumInterestPaid);
+  document.getElementById('rTotalPay').textContent=fmt(r.totalPayable);
+
+  const insight=document.getElementById('insight');
+  const fxGap=r.apr-r.aprNoFx;
+  if(diff<0.5){
+    insight.className='insight ok';
+    insight.innerHTML='Clean offer — your true APR sits close to the advertised rate.';
+  } else {
+    insight.className='insight warn';
+    insight.innerHTML='<strong>The advertised '+annualRate.toFixed(2)+'% is not the real cost.</strong> Staggered disbursal plus fees lift the true APR to <strong>'+r.aprNoFx.toFixed(2)+'%</strong>'+(fxGap>0.01?', and rupee depreciation plus transfer charges add another <strong>'+fxGap.toFixed(2)+' points</strong>, bringing the genuine cost to <strong>'+r.apr.toFixed(2)+'%</strong>':'')+'. Always compare loans by APR, not the headline rate.';
+  }
+
+  document.getElementById('results').classList.add('show');
+  document.getElementById('ctaCard').style.display='block';
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+
+  // Log the calculation to backend for lead capture
+  const profile=JSON.parse(localStorage.getItem('zolve_profile')||'{}');
+  callBackend('logCalculation',{
+    email:localStorage.getItem('zolve_auth_email'),
+    phone:localStorage.getItem('zolve_auth_phone'),
+    school:localStorage.getItem('zolve_school'),
+    profile,
+    inputs:{lenderName, annualRate, totalMonths, moratoriumMonths, moratoriumType,
+            partialAmount, tranches, feeProcessing, feeInsurance, feeOther,
+            forexCAGR, usdInrToday, remitPerUSD, repaySource},
+    results:{emi:r.emi, apr:r.apr, aprNoFx:r.aprNoFx, totalPayable:r.totalPayable},
+    timestamp: new Date().toISOString()
+  });
+}
+
+function trackBooking(){
+  callBackend('trackBooking',{email:localStorage.getItem('zolve_auth_email'), timestamp:new Date().toISOString()});
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load',()=>{
+  if(!gateAuth()) return;
+  document.getElementById('userEmail').textContent=localStorage.getItem('zolve_auth_email')||'';
+  renderWatermark();
+  renderTranches();
+  onMoratoriumTypeChange();
+});
+</script>
+</body>
+</html>
