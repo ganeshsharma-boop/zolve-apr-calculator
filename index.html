@@ -138,10 +138,6 @@ function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
 function isPhone(s){ return /^\d{7,15}$/.test(s); }
 
 async function callBackend(action, payload){
-  if(APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec'){
-    await new Promise(r=>setTimeout(r,500));
-    return {ok:true, demo:true};
-  }
   try{
     const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
     return await r.json();
