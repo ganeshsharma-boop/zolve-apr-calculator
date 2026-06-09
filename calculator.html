@@ -368,6 +368,13 @@ function gateAuth(){
   const s=localStorage.getItem('zolve_school_status');
   if(!e || Date.now()-t > 7*24*60*60*1000){ window.location.href='index.html'; return false; }
   if(s!=='approved'){ window.location.href=s==='pending'?'pending.html':'school.html'; return false; }
+  // Profile completeness check: every required field must be present, otherwise send back to school.html
+  try{
+    const p=JSON.parse(localStorage.getItem('zolve_profile')||'{}');
+    if(!p.firstName || !p.lastName || !p.school || !p.intake || !p.loanStatus){
+      window.location.href='school.html'; return false;
+    }
+  }catch(err){ window.location.href='school.html'; return false; }
   return true;
 }
 
