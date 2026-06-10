@@ -368,13 +368,6 @@ function gateAuth(){
   const s=localStorage.getItem('zolve_school_status');
   if(!e || Date.now()-t > 7*24*60*60*1000){ window.location.href='index.html'; return false; }
   if(s!=='approved'){ window.location.href=s==='pending'?'pending.html':'school.html'; return false; }
-  // Profile completeness check: every required field must be present, otherwise send back to school.html
-  try{
-    const p=JSON.parse(localStorage.getItem('zolve_profile')||'{}');
-    if(!p.firstName || !p.lastName || !p.school || !p.intake || !p.loanStatus){
-      window.location.href='school.html'; return false;
-    }
-  }catch(err){ window.location.href='school.html'; return false; }
   return true;
 }
 
@@ -434,21 +427,53 @@ function computeLoan(p){
 
   function runLedger(useFinanced){
     const draw=m=>financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
-    let balance=0; const outflow=new Array(totalMonths).fill(0); let moratoriumPaid=0;
+    let balance=0;
+    const outflow=new Array(totalMonths).fill(0);
+    let moratoriumPaid=0;
+
+    if(moratoriumMonths===0 && moratoriumType==='none'){
+      // IMMEDIATE EMI with tranche-aware amortisation:
+      // recompute EMI on each new draw, no interest on undrawn money
+      let emi=0;
+      for(let m=1;m<=totalMonths;m++){
+        const newDraw=draw(m);
+        if(newDraw>0){
+          balance += newDraw;
+          const remainingMonths = totalMonths - m + 1;
+          emi = calculateEMI(balance, annualRate, remainingMonths);
+        }
+        const interest = balance*mr;
+        balance += interest;
+        const pay = Math.min(emi, balance);
+        balance -= pay;
+        outflow[m-1] = pay;
+        if(balance < 0.01){ balance=0; }
+      }
+      const lastTrancheMonth = financed.length ? financed[financed.length-1].month : 1;
+      let b=0;
+      for(let m=1;m<=lastTrancheMonth;m++){
+        b += draw(m);
+        if(m<lastTrancheMonth){ const i=b*mr; b += i; b -= calculateEMI(b,annualRate,totalMonths-m+1); }
+      }
+      const repEmi = calculateEMI(b, annualRate, totalMonths-lastTrancheMonth+1);
+      return {principalAtRepayStart: totalDisbursed, emi:repEmi, outflow, moratoriumPaid:0};
+    }
+
     for(let m=1;m<=moratoriumMonths;m++){
-      balance+=draw(m);
-      const interest=balance*mr;
+      balance += draw(m);
+      const interest = balance*mr;
       let pay=0;
       if(moratoriumType==='pemi') pay=interest;
       else if(moratoriumType==='partial') pay=Math.min(partialAmount,interest);
       else pay=0;
-      balance+=(interest-pay);
-      outflow[m-1]+=pay; moratoriumPaid+=pay;
+      balance += (interest-pay);
+      outflow[m-1] += pay;
+      moratoriumPaid += pay;
     }
     if(moratoriumMonths===0){ balance=0; for(let m=1;m<=totalMonths;m++) balance+=draw(m); }
-    const principalAtRepayStart=balance;
-    const emi=calculateEMI(principalAtRepayStart, annualRate, repay);
-    for(let m=1;m<=repay;m++) outflow[moratoriumMonths+m-1]+=emi;
+    const principalAtRepayStart = balance;
+    const emi = calculateEMI(principalAtRepayStart, annualRate, repay);
+    for(let m=1;m<=repay;m++) outflow[moratoriumMonths+m-1] += emi;
     return {principalAtRepayStart, emi, outflow, moratoriumPaid};
   }
 
@@ -458,7 +483,6 @@ function computeLoan(p){
     if(fxToday<=0 || remit<=0 || repaySource!=='usd') return 0;
     return (emi/fxToday)*remit*repay;
   }
-
   function aprFor(run, includeForex){
     const cf=new Array(totalMonths).fill(0);
     for(const t of financed) cf[t.month-1]+=t.base;
@@ -473,12 +497,12 @@ function computeLoan(p){
     }
     return irrAnnual(cf);
   }
-
   const aprNoFx=aprFor(baseRun,false), apr=aprFor(fxRun,true);
   const inbound=inboundRemitTotal(fxRun.emi);
-  const totalRepay=fxRun.moratoriumPaid+fxRun.emi*repay+inbound;
-  return {emi:fxRun.emi, emiNoFx:baseRun.emi, apr, aprNoFx, principalAtRepayStart:fxRun.principalAtRepayStart,
-          totalDisbursed, forexSurcharge, outboundRemit, inboundRemit:inbound,
+  const totalRepay = fxRun.outflow.reduce((s,x)=>s+x,0) + inbound;
+  return {emi:fxRun.emi, emiNoFx:baseRun.emi, apr, aprNoFx,
+          principalAtRepayStart:fxRun.principalAtRepayStart, totalDisbursed,
+          forexSurcharge, outboundRemit, inboundRemit:inbound,
           totalPayable:totalRepay, moratoriumInterestPaid:fxRun.moratoriumPaid};
 }
 
@@ -521,6 +545,10 @@ function onMoratoriumTypeChange(){
 // CALCULATE
 // ============================================================
 async function callBackend(action, payload){
+  if(APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec'){
+    await new Promise(r=>setTimeout(r,200));
+    return {ok:true, demo:true};
+  }
   try{
     const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
     return await r.json();
