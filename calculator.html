@@ -265,6 +265,44 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="insight" id="insight"></div>
   </div>
 
+  <div class="card results" id="accelCard" style="display:none">
+    <h2>What if you closed this loan faster?</h2>
+    <p class="subtitle">Once you finish your degree and start earning, you can accelerate repayment by paying a higher EMI than the schedule requires. See how much you save.</p>
+
+    <div class="form-grid">
+      <div class="input-group">
+        <label>Close the loan in how many months after study ends?</label>
+        <input type="number" id="accelCloseMonths" value="60">
+        <div class="field-note">e.g. enter 60 to clear the loan within 5 years of graduating.</div>
+      </div>
+      <div class="input-group">
+        <label>Gap before higher EMI starts <span class="hint">months after study ends</span></label>
+        <input type="number" id="accelGapMonths" value="6">
+        <div class="field-note">Time you need after graduation to relocate, start your job, and stabilise.</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calculateAccelerated()" style="margin-top:14px">See accelerated scenario</button>
+
+    <div id="accelResult" style="display:none;margin-top:22px">
+      <div class="apr-ladder" style="margin-bottom:16px">
+        <div class="apr-step advertised"><div class="s-label">Original schedule</div><div class="s-val" id="accelOrigApr">—</div><div class="s-label" style="margin-top:6px;text-transform:none;letter-spacing:0">true APR</div></div>
+        <div class="apr-step base"><div class="s-label">Accelerated schedule</div><div class="s-val" id="accelNewApr">—</div><div class="s-label" style="margin-top:6px;text-transform:none;letter-spacing:0">true APR</div></div>
+      </div>
+
+      <div class="result-row"><span class="result-label">Higher monthly EMI required</span><span class="result-value big" id="accelEMI">—</span></div>
+      <div class="result-row"><span class="result-label">Months saved on the loan</span><span class="result-value" id="accelMonthsSaved">—</span></div>
+      <div class="result-row"><span class="result-label">Interest saved</span><span class="result-value" id="accelInterestSaved">—</span></div>
+      <div class="result-row"><span class="result-label">Total payable (accelerated)</span><span class="result-value" id="accelTotalPay">—</span></div>
+
+      <div class="insight ok" style="margin-top:16px">
+        <strong>The interest you avoid is the real saving.</strong> Look at the rupees saved, not the APR. Fewer months of repayment means months of interest never accrue on your balance — that is where the savings come from.
+      </div>
+      <div class="insight warn" style="margin-top:10px">
+        <strong>Why might the APR move up, not down?</strong> APR measures cost per rupee borrowed across the life of the loan. When you compress repayment into a shorter window, your fixed costs — processing fees, money-transfer charges — get spread over fewer months and a higher EMI, which can nudge APR up. In return, you cut tens of lakhs in interest you would otherwise have paid. The trade-off is almost always worth it in absolute rupee terms, even if the APR percentage moves in the wrong direction. Always compare loan options by total rupees paid, not APR alone.
+      </div>
+    </div>
+  </div>
+
   <div class="cta-card" id="ctaCard" style="display:none">
     <h2>Want to explore lower rates?</h2>
     <p>Book a 30-minute consultation with our team. We will look at your sanction letter, walk through your options across lenders, and help you decide what is best. No fees, no pressure.</p>
@@ -426,41 +464,25 @@ function computeLoan(p){
   });
 
   function runLedger(useFinanced){
-    const draw=m=>financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
-    let balance=0;
     const outflow=new Array(totalMonths).fill(0);
-    let moratoriumPaid=0;
-
     if(moratoriumMonths===0 && moratoriumType==='none'){
-      // IMMEDIATE EMI with tranche-aware amortisation:
-      // recompute EMI on each new draw, no interest on undrawn money
-      let emi=0;
-      for(let m=1;m<=totalMonths;m++){
-        const newDraw=draw(m);
-        if(newDraw>0){
-          balance += newDraw;
-          const remainingMonths = totalMonths - m + 1;
-          emi = calculateEMI(balance, annualRate, remainingMonths);
-        }
-        const interest = balance*mr;
-        balance += interest;
-        const pay = Math.min(emi, balance);
-        balance -= pay;
-        outflow[m-1] = pay;
-        if(balance < 0.01){ balance=0; }
+      // Parallel sub-loan model: each tranche is its own loan amortising over
+      // (totalMonths - drawMonth + 1) at the same rate. Tranches pay in parallel.
+      for(const t of financed){
+        const amt = useFinanced ? t.financed : t.base;
+        const remainingMonths = totalMonths - t.month + 1;
+        const subEmi = calculateEMI(amt, annualRate, remainingMonths);
+        for(let m=t.month; m<=totalMonths; m++) outflow[m-1] += subEmi;
       }
-      const lastTrancheMonth = financed.length ? financed[financed.length-1].month : 1;
-      let b=0;
-      for(let m=1;m<=lastTrancheMonth;m++){
-        b += draw(m);
-        if(m<lastTrancheMonth){ const i=b*mr; b += i; b -= calculateEMI(b,annualRate,totalMonths-m+1); }
-      }
-      const repEmi = calculateEMI(b, annualRate, totalMonths-lastTrancheMonth+1);
-      return {principalAtRepayStart: totalDisbursed, emi:repEmi, outflow, moratoriumPaid:0};
+      const lastMonth = financed.length ? financed[financed.length-1].month : 1;
+      const peakEmi = outflow[lastMonth-1];
+      return {principalAtRepayStart: totalDisbursed, emi:peakEmi, outflow, moratoriumPaid:0};
     }
-
+    // Moratorium path (interest only / partial / full defer)
+    let balance=0, moratoriumPaid=0;
     for(let m=1;m<=moratoriumMonths;m++){
-      balance += draw(m);
+      const drawn=financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
+      balance += drawn;
       const interest = balance*mr;
       let pay=0;
       if(moratoriumType==='pemi') pay=interest;
@@ -470,7 +492,13 @@ function computeLoan(p){
       outflow[m-1] += pay;
       moratoriumPaid += pay;
     }
-    if(moratoriumMonths===0){ balance=0; for(let m=1;m<=totalMonths;m++) balance+=draw(m); }
+    if(moratoriumMonths===0){
+      balance=0;
+      for(let m=1;m<=totalMonths;m++){
+        const drawn=financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
+        balance += drawn;
+      }
+    }
     const principalAtRepayStart = balance;
     const emi = calculateEMI(principalAtRepayStart, annualRate, repay);
     for(let m=1;m<=repay;m++) outflow[moratoriumMonths+m-1] += emi;
@@ -478,11 +506,7 @@ function computeLoan(p){
   }
 
   const baseRun=runLedger(false), fxRun=runLedger(true);
-
-  function inboundRemitTotal(emi){
-    if(fxToday<=0 || remit<=0 || repaySource!=='usd') return 0;
-    return (emi/fxToday)*remit*repay;
-  }
+  function inboundRemitTotal(emi){if(fxToday<=0||remit<=0||repaySource!=='usd')return 0;return (emi/fxToday)*remit*repay;}
   function aprFor(run, includeForex){
     const cf=new Array(totalMonths).fill(0);
     for(const t of financed) cf[t.month-1]+=t.base;
@@ -500,7 +524,9 @@ function computeLoan(p){
   const aprNoFx=aprFor(baseRun,false), apr=aprFor(fxRun,true);
   const inbound=inboundRemitTotal(fxRun.emi);
   const totalRepay = fxRun.outflow.reduce((s,x)=>s+x,0) + inbound;
-  return {emi:fxRun.emi, emiNoFx:baseRun.emi, apr, aprNoFx,
+  // EMI shown matches base-amount math (what the student would calculate by hand).
+  // Forex impact is reflected separately in forexSurcharge and the APR ladder.
+  return {emi:baseRun.emi, emiNoFx:baseRun.emi, apr, aprNoFx,
           principalAtRepayStart:fxRun.principalAtRepayStart, totalDisbursed,
           forexSurcharge, outboundRemit, inboundRemit:inbound,
           totalPayable:totalRepay, moratoriumInterestPaid:fxRun.moratoriumPaid};
@@ -601,6 +627,7 @@ function calculate(){
   }
 
   document.getElementById('results').classList.add('show');
+  document.getElementById('accelCard').style.display='block';
   document.getElementById('ctaCard').style.display='block';
   document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
 
@@ -617,6 +644,131 @@ function calculate(){
     results:{emi:r.emi, apr:r.apr, aprNoFx:r.aprNoFx, totalPayable:r.totalPayable},
     timestamp: new Date().toISOString()
   });
+}
+
+function calculateAccelerated(){
+  // Pull the same inputs as the main calculator
+  const annualRate=parseFloat(document.getElementById('interestRate').value);
+  const totalMonths=parseInt(document.getElementById('tenureMonths').value);
+  const moratoriumMonths=parseInt(document.getElementById('moratoriumMonths').value)||0;
+  const moratoriumType=document.getElementById('moratoriumType').value;
+  const partialAmount=parseFloat(document.getElementById('partialAmount').value)||0;
+  const forexCAGR=parseFloat(document.getElementById('forexCAGR').value)||0;
+  const usdInrToday=parseFloat(document.getElementById('usdInrToday').value)||0;
+  const remitPerUSD=parseFloat(document.getElementById('remitPerUSD').value)||0;
+  const feeProcessing=parseFloat(document.getElementById('feeProcessing').value)||0;
+  const feeInsurance=parseFloat(document.getElementById('feeInsurance').value)||0;
+  const feeOther=parseFloat(document.getElementById('feeOther').value)||0;
+  const upfrontFees=feeProcessing+feeInsurance+feeOther;
+  const tranches=trancheState.filter(t=>t.amount>0);
+
+  const closeMonths=parseInt(document.getElementById('accelCloseMonths').value)||60;
+  const gapMonths=parseInt(document.getElementById('accelGapMonths').value)||6;
+
+  // Original
+  const orig=computeLoan({tranches,annualRate,totalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource});
+
+  // Accelerated: replace post-study repayment with (gap + closeMonths) instead of (totalMonths - moratoriumMonths)
+  // New total tenure = moratoriumMonths + gapMonths + closeMonths
+  const newTotalMonths = moratoriumMonths + gapMonths + closeMonths;
+  // We approximate the gap by extending the moratorium with type 'pemi' to keep interest serviced from study end to gap end
+  // For simplicity model: keep original moratorium behaviour, then a fresh amortisation over closeMonths starting after gapMonths
+  // We achieve this by computing principal at end of (moratorium + gap), then amortising over closeMonths
+  const accel=computeAcceleratedLoan({tranches,annualRate,totalMonths:newTotalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource,gapMonths,closeMonths});
+
+  document.getElementById('accelOrigApr').textContent=orig.apr.toFixed(2)+'%';
+  document.getElementById('accelNewApr').textContent=accel.apr.toFixed(2)+'%';
+  document.getElementById('accelEMI').textContent=fmt(accel.emi);
+  const monthsSaved=Math.max(0,(totalMonths-moratoriumMonths)-(gapMonths+closeMonths));
+  document.getElementById('accelMonthsSaved').textContent=monthsSaved+' months ('+(monthsSaved/12).toFixed(1)+' years)';
+  const interestSaved=orig.totalPayable-accel.totalPayable;
+  document.getElementById('accelInterestSaved').textContent=fmt(Math.max(0,interestSaved));
+  document.getElementById('accelTotalPay').textContent=fmt(accel.totalPayable);
+
+  document.getElementById('accelResult').style.display='block';
+}
+
+function computeAcceleratedLoan(p){
+  // Same engine, but the post-moratorium phase is split into gapMonths of PEMI-style interest service
+  // followed by closeMonths of accelerated amortisation.
+  const {tranches, annualRate, totalMonths, moratoriumMonths, moratoriumType, partialAmount,
+         upfrontFees, forexCAGR, remitPerUSD, usdInrToday, repaySource, gapMonths, closeMonths} = p;
+  const mr=annualRate/12/100;
+  const T=[...tranches].filter(t=>t.amount>0).sort((a,b)=>a.month-b.month);
+  const cagr=(forexCAGR||0)/100, fxToday=usdInrToday>0?usdInrToday:0, remit=remitPerUSD||0;
+
+  let forexSurcharge=0, outboundRemit=0;
+  const financed=T.map(t=>{
+    const dep=t.amount*cagr*((t.month-1)/12);
+    forexSurcharge+=dep;
+    if(fxToday>0) outboundRemit+=(t.amount/fxToday)*remit;
+    return {month:t.month, base:t.amount, financed:t.amount+dep};
+  });
+
+  function runLedger(useFinanced){
+    const outflow=new Array(totalMonths).fill(0);
+    let balance=0, moratoriumPaid=0;
+    // Study moratorium (existing behaviour)
+    for(let m=1;m<=moratoriumMonths;m++){
+      const drawn=financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
+      balance += drawn;
+      const interest = balance*mr;
+      let pay=0;
+      if(moratoriumType==='pemi') pay=interest;
+      else if(moratoriumType==='partial') pay=Math.min(partialAmount,interest);
+      else pay=0;
+      balance += (interest-pay);
+      outflow[m-1] += pay;
+      moratoriumPaid += pay;
+    }
+    if(moratoriumMonths===0){
+      balance=0;
+      // For no-moratorium (immediate EMI) base case, treat tranches arriving over time as drawn fully by study end
+      for(let m=1;m<=moratoriumMonths+1;m++){
+        const drawn=financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
+        balance += drawn;
+      }
+      // Add remaining tranches to balance (assume immediate disbursal completes before accelerated phase)
+      for(const t of financed){
+        if(t.month>moratoriumMonths+1){
+          balance += (useFinanced?t.financed:t.base);
+        }
+      }
+    }
+    // Gap months: service interest only (keeps principal flat, fair assumption while job stabilises)
+    for(let m=moratoriumMonths+1; m<=moratoriumMonths+gapMonths; m++){
+      const interest = balance*mr;
+      outflow[m-1] += interest;
+      // balance stays constant
+    }
+    // Accelerated phase: amortise balance over closeMonths
+    const emi = calculateEMI(balance, annualRate, closeMonths);
+    for(let m=moratoriumMonths+gapMonths+1; m<=moratoriumMonths+gapMonths+closeMonths; m++){
+      outflow[m-1] += emi;
+    }
+    return {principalAtRepayStart:balance, emi, outflow, moratoriumPaid};
+  }
+
+  const baseRun=runLedger(false), fxRun=runLedger(true);
+  function inboundRemitTotal(emi){if(fxToday<=0||remit<=0||repaySource!=='usd')return 0;return (emi/fxToday)*remit*closeMonths;}
+  function aprFor(run, includeForex){
+    const cf=new Array(totalMonths).fill(0);
+    for(const t of financed) cf[t.month-1]+=t.base;
+    if(financed.length){
+      cf[financed[0].month-1]-=upfrontFees;
+      if(includeForex) cf[financed[0].month-1]-=outboundRemit;
+    }
+    for(let m=0;m<totalMonths;m++) cf[m]-=run.outflow[m];
+    if(includeForex){
+      const per=inboundRemitTotal(run.emi)/closeMonths;
+      for(let m=moratoriumMonths+gapMonths+1;m<=moratoriumMonths+gapMonths+closeMonths;m++) cf[m-1]-=per;
+    }
+    return irrAnnual(cf);
+  }
+  const aprNoFx=aprFor(baseRun,false), apr=aprFor(fxRun,true);
+  const inbound=inboundRemitTotal(fxRun.emi);
+  const totalRepay = fxRun.outflow.reduce((s,x)=>s+x,0) + inbound;
+  return {emi:fxRun.emi, apr, aprNoFx, totalPayable:totalRepay};
 }
 
 function trackBooking(){
