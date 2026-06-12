@@ -138,6 +138,10 @@ function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
 function isPhone(s){ return /^\d{7,15}$/.test(s); }
 
 async function callBackend(action, payload){
+  if(APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbypjus0Btc8aG0r6EJvPa0dYJOqHZX1m2QjV4inOFKS4w5E94QJHNdsTAkVKzYeKqsp/exec'){
+    await new Promise(r=>setTimeout(r,500));
+    return {ok:true, demo:true};
+  }
   try{
     const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
     return await r.json();
@@ -160,7 +164,7 @@ async function sendOTP(){
   const r=await callBackend('requestEmailOTP',{email,phone:cc+phone});
   btn.disabled=false; btn.textContent='Send verification code';
 
-  if(r.ok){ showSection(2); showNotice(2,'For demo: use code <strong>'+DEMO_EMAIL_CODE+'</strong>','info'); }
+  if(r.ok){ showSection(2); if(r.demo){ showNotice(2,'For demo: use code <strong>'+DEMO_EMAIL_CODE+'</strong>','info'); } else { showNotice(2,'Check your inbox for the 6-digit code.','info'); } }
   else { showNotice(1, r.error||'Something went wrong. Please try again.','err'); }
 }
 
