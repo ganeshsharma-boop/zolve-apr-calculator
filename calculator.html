@@ -16,7 +16,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .nav-link{color:#fff;opacity:0.7;font-size:12px;text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit}
 .hero{background:var(--black);color:#fff;padding:28px 24px 50px;text-align:center}
 .hero h1{font-size:clamp(22px,4vw,30px);font-weight:800;line-height:1.2;margin-bottom:10px;letter-spacing:-0.5px}
-.hero h1 .y{color:var(--orange)}
 .hero p{font-size:14px;opacity:0.82;max-width:600px;margin:0 auto}
 .container{max-width:780px;margin:-30px auto 48px;padding:0 16px;position:relative;z-index:2}
 .card{background:var(--card);border-radius:16px;padding:28px;box-shadow:0 8px 32px rgba(0,0,0,0.06);margin-bottom:18px;position:relative}
@@ -116,7 +115,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .disclaimer-card{background:#FFFEF7;border:1px solid #F0E8C8;border-radius:10px;padding:18px;font-size:11px;line-height:1.55;color:#7A6914;margin-top:18px}
 .disclaimer-card strong{color:var(--black)}
 .footer{text-align:center;padding:24px 16px 40px;color:var(--muted);font-size:11px;line-height:1.6}
-/* Watermark */
 .watermark{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;opacity:0.04;user-select:none}
 .watermark-text{position:absolute;font-size:14px;color:#000;white-space:nowrap;transform:rotate(-30deg);font-weight:600}
 @media print{ .nav,.cta-card,.btn,.btn-link,.add-tranche{display:none !important} .watermark{opacity:0.15 !important} }
@@ -124,7 +122,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </head>
 <body>
 <div class="watermark" id="watermark"></div>
-
 <nav class="nav">
   <span class="nav-brand">Zolve</span>
   <div class="nav-right">
@@ -132,18 +129,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <button class="nav-link" onclick="signOut()">Sign out</button>
   </div>
 </nav>
-
 <header class="hero">
   <h1>Your <span style="color:var(--orange)">true loan cost</span>, in 30 seconds</h1>
   <p>Built for M7 MBA students. Enter your loan exactly as it appears on your sanction letter to see the APR you actually pay.</p>
 </header>
-
 <main class="container">
-
   <div class="card">
     <h2>Loan inputs</h2>
     <p class="subtitle">Enter the numbers from your sanction letter. The more accurate your inputs, the closer the APR.</p>
-
     <div class="form-grid">
       <div class="input-group full">
         <label>Lender name <span class="hint">(for your records)</span></label>
@@ -184,14 +177,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         </div>
       </div>
     </div>
-
     <div class="section-divider">Disbursal tranches</div>
     <p class="subtitle" style="margin-bottom:12px">Loans are usually drawn in stages, often once per semester. Enter each expected disbursal and the month it lands (month 1 = your first draw). Interest accrues on each tranche only from the month it is drawn.</p>
     <div class="tranche-head"><span></span><span>Amount (₹)</span><span>Month drawn</span><span></span></div>
     <div id="trancheContainer"></div>
     <button class="add-tranche" onclick="addTranche()">+ Add another tranche</button>
     <div class="tranche-sum">Total disbursal: <strong id="trancheSum">—</strong></div>
-
     <div class="section-divider">Fees</div>
     <div class="fee-row">
       <span class="fee-label">Processing fee (₹)</span>
@@ -206,7 +197,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <span class="fee-label">Other charges (₹)</span>
       <input type="number" id="feeOther" value="">
     </div>
-
     <div class="section-divider">Currency &amp; money transfer</div>
     <div class="form-grid">
       <div class="input-group">
@@ -232,26 +222,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <div class="field-note">If you repay from dollars earned abroad, each EMI also carries the transfer markup back to India.</div>
       </div>
     </div>
-
     <button class="btn btn-primary" onclick="calculate()" style="margin-top:18px">Calculate true APR</button>
   </div>
-
   <div class="card results" id="results">
     <h2>Your true cost</h2>
     <p class="subtitle">The advertised rate is only the starting point. Here is what the loan actually costs.</p>
-
     <div class="apr-headline">
       <div class="label">True Annual Percentage Rate</div>
       <div class="value" id="aprValue">—</div>
       <div class="compare" id="aprCompare">—</div>
     </div>
-
     <div class="apr-ladder">
       <div class="apr-step advertised"><div class="s-label">Advertised</div><div class="s-val" id="ladderAdv">—</div></div>
       <div class="apr-step base"><div class="s-label">With fees + tranches</div><div class="s-val" id="ladderBase">—</div></div>
       <div class="apr-step forex"><div class="s-label">Incl. forex + transfer</div><div class="s-val" id="ladderForex">—</div></div>
     </div>
-
     <div class="result-row"><span class="result-label">Monthly EMI (after study)</span><span class="result-value big" id="rEMI">—</span></div>
     <div class="result-row"><span class="result-label">Advertised interest rate</span><span class="result-value" id="rRate">—</span></div>
     <div class="result-row"><span class="result-label">Total disbursed (base)</span><span class="result-value" id="rDisbursed">—</span></div>
@@ -261,14 +246,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="result-row"><span class="result-label">Principal when repayment starts</span><span class="result-value" id="rCap">—</span></div>
     <div class="result-row"><span class="result-label">Paid during study</span><span class="result-value" id="rMoraInt">—</span></div>
     <div class="result-row"><span class="result-label">Total amount payable</span><span class="result-value" id="rTotalPay">—</span></div>
-
     <div class="insight" id="insight"></div>
   </div>
-
   <div class="card results" id="accelCard" style="display:none">
     <h2>What if you closed this loan faster?</h2>
     <p class="subtitle">Once you finish your degree and start earning, you can accelerate repayment by paying a higher EMI than the schedule requires. See how much you save.</p>
-
     <div class="form-grid">
       <div class="input-group">
         <label>Close the loan in how many months after study ends?</label>
@@ -282,18 +264,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       </div>
     </div>
     <button class="btn btn-primary" onclick="calculateAccelerated()" style="margin-top:14px">See accelerated scenario</button>
-
     <div id="accelResult" style="display:none;margin-top:22px">
       <div class="apr-ladder" style="margin-bottom:16px">
         <div class="apr-step advertised"><div class="s-label">Original schedule</div><div class="s-val" id="accelOrigApr">—</div><div class="s-label" style="margin-top:6px;text-transform:none;letter-spacing:0">true APR</div></div>
         <div class="apr-step base"><div class="s-label">Accelerated schedule</div><div class="s-val" id="accelNewApr">—</div><div class="s-label" style="margin-top:6px;text-transform:none;letter-spacing:0">true APR</div></div>
       </div>
-
       <div class="result-row"><span class="result-label">Higher monthly EMI required</span><span class="result-value big" id="accelEMI">—</span></div>
       <div class="result-row"><span class="result-label">Months saved on the loan</span><span class="result-value" id="accelMonthsSaved">—</span></div>
       <div class="result-row"><span class="result-label">Interest saved</span><span class="result-value" id="accelInterestSaved">—</span></div>
       <div class="result-row"><span class="result-label">Total payable (accelerated)</span><span class="result-value" id="accelTotalPay">—</span></div>
-
       <div class="insight ok" style="margin-top:16px">
         <strong>The interest you avoid is the real saving.</strong> Look at the rupees saved, not the APR. Fewer months of repayment means months of interest never accrue on your balance — that is where the savings come from.
       </div>
@@ -302,13 +281,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       </div>
     </div>
   </div>
-
   <div class="cta-card" id="ctaCard" style="display:none">
     <h2>Want to explore lower rates?</h2>
     <p>Book a 30-minute consultation with our team. We will look at your sanction letter, walk through your options across lenders, and help you decide what is best. No fees, no pressure.</p>
     <a class="btn-cta" href="https://calendar.app.google/pvjz78nTf9yWhqe68" target="_blank" onclick="trackBooking()">Book a consultation</a>
   </div>
-
   <div class="card guide">
     <h2>What is APR and why does it matter?</h2>
     <div class="explainer-card">
@@ -319,7 +296,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <strong>How to use this calculator:</strong> simply input your estimated loan amount, interest rate, and loan term, along with the other requested information. The calculator will then estimate your monthly EMI, total interest paid, the overall amount you will repay, and the APR percentage.
     </div>
   </div>
-
   <div class="card guide">
     <h2>Understanding your repayment options</h2>
     <p class="subtitle">Most lenders offer four ways to handle payments while you are still in school. Each trades off how much you pay now against how much the loan costs in total. Remember: no lender offers a free period — interest you do not pay is added to what you owe.</p>
@@ -353,7 +329,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       </div>
     </div>
   </div>
-
   <div class="card guide">
     <h2>Why currency matters</h2>
     <p class="subtitle">Your loan is in rupees, but your school is paid in dollars. Two separate currency costs raise your real APR above the advertised rate.</p>
@@ -375,7 +350,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </table>
     <p class="fx-disclaimer">Figures shown for educational purposes only, to illustrate the long-term trend. Past movement does not predict future rates.</p>
   </div>
-
   <div class="card">
     <h2>Disclaimer</h2>
     <div class="disclaimer-card">
@@ -386,13 +360,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <strong>*Loan and promotion offers are subject to our lending partners' eligibility, funding, and credit assessment criteria.</strong>
     </div>
   </div>
-
 </main>
-
 <footer class="footer">
   <p>Zolve · Education Loan APR Calculator. For informational purposes only.</p>
 </footer>
-
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylbvv0RImrCDyWnP0Jv5tMN8RLjh9Z0zs00AvPjlYL7BY1hEW3OxY2b0MEQUOFvWy4/exec';
 const BOOKING_URL = 'https://calendar.app.google/pvjz78nTf9yWhqe68';
@@ -408,11 +379,10 @@ function gateAuth(){
   if(s!=='approved'){ window.location.href=s==='pending'?'pending.html':'school.html'; return false; }
   return true;
 }
-
 function signOut(){ localStorage.clear(); window.location.href='index.html'; }
 
 // ============================================================
-// WATERMARK (deters screenshot sharing)
+// WATERMARK
 // ============================================================
 function renderWatermark(){
   const email=localStorage.getItem('zolve_auth_email')||'guest';
@@ -429,7 +399,7 @@ function renderWatermark(){
 }
 
 // ============================================================
-// ENGINE (validated)
+// ENGINE
 // ============================================================
 function calculateEMI(p, ar, m){ if(ar===0) return p/m; const r=ar/12/100; return p*r*Math.pow(1+r,m)/(Math.pow(1+r,m)-1); }
 
@@ -454,7 +424,6 @@ function computeLoan(p){
   const T=[...tranches].filter(t=>t.amount>0).sort((a,b)=>a.month-b.month);
   const totalDisbursed=T.reduce((s,t)=>s+t.amount,0);
   const cagr=(forexCAGR||0)/100, fxToday=usdInrToday>0?usdInrToday:0, remit=remitPerUSD||0;
-
   let forexSurcharge=0, outboundRemit=0;
   const financed=T.map(t=>{
     const dep=t.amount*cagr*((t.month-1)/12);
@@ -462,12 +431,9 @@ function computeLoan(p){
     if(fxToday>0) outboundRemit+=(t.amount/fxToday)*remit;
     return {month:t.month, base:t.amount, financed:t.amount+dep};
   });
-
   function runLedger(useFinanced){
     const outflow=new Array(totalMonths).fill(0);
     if(moratoriumMonths===0 && moratoriumType==='none'){
-      // Parallel sub-loan model: each tranche is its own loan amortising over
-      // (totalMonths - drawMonth + 1) at the same rate. Tranches pay in parallel.
       for(const t of financed){
         const amt = useFinanced ? t.financed : t.base;
         const remainingMonths = totalMonths - t.month + 1;
@@ -478,7 +444,6 @@ function computeLoan(p){
       const peakEmi = outflow[lastMonth-1];
       return {principalAtRepayStart: totalDisbursed, emi:peakEmi, outflow, moratoriumPaid:0};
     }
-    // Moratorium path (interest only / partial / full defer)
     let balance=0, moratoriumPaid=0;
     for(let m=1;m<=moratoriumMonths;m++){
       const drawn=financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
@@ -504,7 +469,6 @@ function computeLoan(p){
     for(let m=1;m<=repay;m++) outflow[moratoriumMonths+m-1] += emi;
     return {principalAtRepayStart, emi, outflow, moratoriumPaid};
   }
-
   const baseRun=runLedger(false), fxRun=runLedger(true);
   function inboundRemitTotal(emi){if(fxToday<=0||remit<=0||repaySource!=='usd')return 0;return (emi/fxToday)*remit*repay;}
   function aprFor(run, includeForex){
@@ -524,8 +488,6 @@ function computeLoan(p){
   const aprNoFx=aprFor(baseRun,false), apr=aprFor(fxRun,true);
   const inbound=inboundRemitTotal(fxRun.emi);
   const totalRepay = fxRun.outflow.reduce((s,x)=>s+x,0) + inbound;
-  // EMI shown matches base-amount math (what the student would calculate by hand).
-  // Forex impact is reflected separately in forexSurcharge and the APR ladder.
   return {emi:baseRun.emi, emiNoFx:baseRun.emi, apr, aprNoFx,
           principalAtRepayStart:fxRun.principalAtRepayStart, totalDisbursed,
           forexSurcharge, outboundRemit, inboundRemit:inbound,
@@ -554,12 +516,10 @@ function updateTranche(i,f,v){ trancheState[i][f]=parseFloat(v)||0; updateTranch
 function addTranche(){ const lm=trancheState.length?Math.max(...trancheState.map(t=>t.month)):1; trancheState.push({amount:0,month:lm+6}); renderTranches(); }
 function removeTranche(i){ if(trancheState.length>1){ trancheState.splice(i,1); renderTranches(); } }
 function updateTrancheSum(){ document.getElementById('trancheSum').textContent=fmt(trancheState.reduce((s,t)=>s+(t.amount||0),0)); }
-
 function setRepaySource(v){
   repaySource=v;
   document.querySelectorAll('#repaySource button').forEach(b=>b.classList.toggle('on', b.getAttribute('data-val')===v));
 }
-
 function onMoratoriumTypeChange(){
   const t=document.getElementById('moratoriumType').value;
   document.getElementById('partialDetail').classList.toggle('show',t==='partial');
@@ -568,7 +528,7 @@ function onMoratoriumTypeChange(){
 }
 
 // ============================================================
-// CALCULATE
+// BACKEND — FIXED: demo guard removed, real fetch always runs
 // ============================================================
 async function callBackend(action, payload){
   try{
@@ -576,12 +536,10 @@ async function callBackend(action, payload){
     return await r.json();
   }catch(e){ return {ok:false}; }
 }
-  try{
-    const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
-    return await r.json();
-  }catch(e){ return {ok:false}; }
-}
 
+// ============================================================
+// CALCULATE
+// ============================================================
 function calculate(){
   const lenderName=document.getElementById('lenderName').value.trim();
   const annualRate=parseFloat(document.getElementById('interestRate').value);
@@ -598,9 +556,7 @@ function calculate(){
   const upfrontFees=feeProcessing+feeInsurance+feeOther;
   const tranches=trancheState.filter(t=>t.amount>0);
   if(!annualRate||!totalMonths||!tranches.length){ alert('Please fill rate, tenure, and at least one tranche.'); return; }
-
   const r=computeLoan({tranches,annualRate,totalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource});
-
   document.getElementById('aprValue').textContent=r.apr.toFixed(2)+'%';
   const diff=r.apr-annualRate;
   document.getElementById('aprCompare').textContent=diff>0.01?'+'+diff.toFixed(2)+' points above the advertised '+annualRate.toFixed(2)+'%':'matches the advertised rate';
@@ -616,7 +572,6 @@ function calculate(){
   document.getElementById('rCap').textContent=moratoriumMonths>0?fmt(r.principalAtRepayStart):fmt(r.totalDisbursed)+' (no moratorium)';
   document.getElementById('rMoraInt').textContent=fmt(r.moratoriumInterestPaid);
   document.getElementById('rTotalPay').textContent=fmt(r.totalPayable);
-
   const insight=document.getElementById('insight');
   const fxGap=r.apr-r.aprNoFx;
   if(diff<0.5){
@@ -626,13 +581,10 @@ function calculate(){
     insight.className='insight warn';
     insight.innerHTML='<strong>The advertised '+annualRate.toFixed(2)+'% is not the real cost.</strong> Staggered disbursal plus fees lift the true APR to <strong>'+r.aprNoFx.toFixed(2)+'%</strong>'+(fxGap>0.01?', and rupee depreciation plus transfer charges add another <strong>'+fxGap.toFixed(2)+' points</strong>, bringing the genuine cost to <strong>'+r.apr.toFixed(2)+'%</strong>':'')+'. Always compare loans by APR, not the headline rate.';
   }
-
   document.getElementById('results').classList.add('show');
   document.getElementById('accelCard').style.display='block';
   document.getElementById('ctaCard').style.display='block';
   document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
-
-  // Log the calculation to backend for lead capture
   const profile=JSON.parse(localStorage.getItem('zolve_profile')||'{}');
   callBackend('logCalculation',{
     email:localStorage.getItem('zolve_auth_email'),
@@ -648,7 +600,6 @@ function calculate(){
 }
 
 function calculateAccelerated(){
-  // Pull the same inputs as the main calculator
   const annualRate=parseFloat(document.getElementById('interestRate').value);
   const totalMonths=parseInt(document.getElementById('tenureMonths').value);
   const moratoriumMonths=parseInt(document.getElementById('moratoriumMonths').value)||0;
@@ -662,21 +613,11 @@ function calculateAccelerated(){
   const feeOther=parseFloat(document.getElementById('feeOther').value)||0;
   const upfrontFees=feeProcessing+feeInsurance+feeOther;
   const tranches=trancheState.filter(t=>t.amount>0);
-
   const closeMonths=parseInt(document.getElementById('accelCloseMonths').value)||60;
   const gapMonths=parseInt(document.getElementById('accelGapMonths').value)||6;
-
-  // Original
   const orig=computeLoan({tranches,annualRate,totalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource});
-
-  // Accelerated: replace post-study repayment with (gap + closeMonths) instead of (totalMonths - moratoriumMonths)
-  // New total tenure = moratoriumMonths + gapMonths + closeMonths
   const newTotalMonths = moratoriumMonths + gapMonths + closeMonths;
-  // We approximate the gap by extending the moratorium with type 'pemi' to keep interest serviced from study end to gap end
-  // For simplicity model: keep original moratorium behaviour, then a fresh amortisation over closeMonths starting after gapMonths
-  // We achieve this by computing principal at end of (moratorium + gap), then amortising over closeMonths
   const accel=computeAcceleratedLoan({tranches,annualRate,totalMonths:newTotalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource,gapMonths,closeMonths});
-
   document.getElementById('accelOrigApr').textContent=orig.apr.toFixed(2)+'%';
   document.getElementById('accelNewApr').textContent=accel.apr.toFixed(2)+'%';
   document.getElementById('accelEMI').textContent=fmt(accel.emi);
@@ -685,19 +626,15 @@ function calculateAccelerated(){
   const interestSaved=orig.totalPayable-accel.totalPayable;
   document.getElementById('accelInterestSaved').textContent=fmt(Math.max(0,interestSaved));
   document.getElementById('accelTotalPay').textContent=fmt(accel.totalPayable);
-
   document.getElementById('accelResult').style.display='block';
 }
 
 function computeAcceleratedLoan(p){
-  // Same engine, but the post-moratorium phase is split into gapMonths of PEMI-style interest service
-  // followed by closeMonths of accelerated amortisation.
   const {tranches, annualRate, totalMonths, moratoriumMonths, moratoriumType, partialAmount,
          upfrontFees, forexCAGR, remitPerUSD, usdInrToday, repaySource, gapMonths, closeMonths} = p;
   const mr=annualRate/12/100;
   const T=[...tranches].filter(t=>t.amount>0).sort((a,b)=>a.month-b.month);
   const cagr=(forexCAGR||0)/100, fxToday=usdInrToday>0?usdInrToday:0, remit=remitPerUSD||0;
-
   let forexSurcharge=0, outboundRemit=0;
   const financed=T.map(t=>{
     const dep=t.amount*cagr*((t.month-1)/12);
@@ -705,11 +642,9 @@ function computeAcceleratedLoan(p){
     if(fxToday>0) outboundRemit+=(t.amount/fxToday)*remit;
     return {month:t.month, base:t.amount, financed:t.amount+dep};
   });
-
   function runLedger(useFinanced){
     const outflow=new Array(totalMonths).fill(0);
     let balance=0, moratoriumPaid=0;
-    // Study moratorium (existing behaviour)
     for(let m=1;m<=moratoriumMonths;m++){
       const drawn=financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
       balance += drawn;
@@ -724,32 +659,24 @@ function computeAcceleratedLoan(p){
     }
     if(moratoriumMonths===0){
       balance=0;
-      // For no-moratorium (immediate EMI) base case, treat tranches arriving over time as drawn fully by study end
       for(let m=1;m<=moratoriumMonths+1;m++){
         const drawn=financed.filter(t=>t.month===m).reduce((s,t)=>s+(useFinanced?t.financed:t.base),0);
         balance += drawn;
       }
-      // Add remaining tranches to balance (assume immediate disbursal completes before accelerated phase)
       for(const t of financed){
-        if(t.month>moratoriumMonths+1){
-          balance += (useFinanced?t.financed:t.base);
-        }
+        if(t.month>moratoriumMonths+1){ balance += (useFinanced?t.financed:t.base); }
       }
     }
-    // Gap months: service interest only (keeps principal flat, fair assumption while job stabilises)
     for(let m=moratoriumMonths+1; m<=moratoriumMonths+gapMonths; m++){
       const interest = balance*mr;
       outflow[m-1] += interest;
-      // balance stays constant
     }
-    // Accelerated phase: amortise balance over closeMonths
     const emi = calculateEMI(balance, annualRate, closeMonths);
     for(let m=moratoriumMonths+gapMonths+1; m<=moratoriumMonths+gapMonths+closeMonths; m++){
       outflow[m-1] += emi;
     }
     return {principalAtRepayStart:balance, emi, outflow, moratoriumPaid};
   }
-
   const baseRun=runLedger(false), fxRun=runLedger(true);
   function inboundRemitTotal(emi){if(fxToday<=0||remit<=0||repaySource!=='usd')return 0;return (emi/fxToday)*remit*closeMonths;}
   function aprFor(run, includeForex){
