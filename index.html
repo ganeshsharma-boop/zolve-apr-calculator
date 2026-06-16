@@ -48,11 +48,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <body>
 <nav class="nav">
   <span class="nav-brand">Zolve</span>
-  <span class="nav-tag">APR Calculator · Invite Only</span>
+  <span class="nav-tag">APR Calculator · Top Global MBA Schools</span>
 </nav>
 
 <div class="container">
-  <div class="invite-banner">Currently invite-only for M7 MBA students</div>
+  <div class="invite-banner">Invite-only for students at Top Global MBA Schools &mdash; US &amp; Europe</div>
 
   <div class="card">
     <div class="steps">
@@ -62,7 +62,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
     <div class="section active" id="sec1">
       <h1>See your <span class="y">true loan cost</span></h1>
-      <p class="subtitle">Built for M7 MBA students heading to the US. Enter your details below to get verified access.</p>
+      <p class="subtitle">Built for Indian students at top US &amp; European MBA programs. Enter your details below to get verified access.</p>
 
       <div class="input-group">
         <label>Email address</label>
@@ -107,7 +107,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <footer class="footer">
-  <p>Zolve · For M7 MBA students. Loan calculator for informational purposes only.</p>
+  <p>Zolve · For students at top global MBA programs. Loan calculator for informational purposes only.</p>
 </footer>
 
 <script>
@@ -138,16 +138,10 @@ function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
 function isPhone(s){ return /^\d{7,15}$/.test(s); }
 
 async function callBackend(action, payload){
-  try {
-    const r = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({action, ...payload})
-    });
+  try{
+    const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
     return await r.json();
-  } catch(e) {
-    return {ok: false, error: 'Network error. Please try again.'};
-  }
+  }catch(e){ return {ok:false, error:'Network error. Please try again.'}; }
 }
 
 async function sendOTP(){

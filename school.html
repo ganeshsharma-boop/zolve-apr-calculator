@@ -48,7 +48,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <body>
 <nav class="nav">
   <span class="nav-brand">Zolve</span>
-  <span class="nav-tag">Step 2 · Choose your school</span>
+  <span class="nav-tag">Step 2 &middot; Choose your school</span>
 </nav>
 
 <div class="container">
@@ -56,7 +56,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
     <div class="section active" id="secSchool">
       <h1>Which <span class="y">school</span>?</h1>
-      <p class="subtitle">The calculator is currently invite-only for M7 MBA students. Pick yours below.</p>
+      <p class="subtitle">Select your school below. Indian students at top US and European MBA programs are eligible.</p>
 
       <div class="school-grid" id="schoolGrid"></div>
       <button class="other-btn" onclick="showOther()">Not on the list? Request access</button>
@@ -109,23 +109,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <footer class="footer">
-  <p>Zolve · For M7 MBA students. Loan calculator for informational purposes only.</p>
+  <p>Zolve · For students at top global MBA programs. Loan calculator for informational purposes only.</p>
 </footer>
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylbvv0RImrCDyWnP0Jv5tMN8RLjh9Z0zs00AvPjlYL7BY1hEW3OxY2b0MEQUOFvWy4/exec';
 
 const M7_SCHOOLS = [
-  {name:'Harvard Business School', sub:'HBS'},
-  {name:'Stanford GSB', sub:'Stanford Graduate School of Business'},
-  {name:'The Wharton School', sub:'University of Pennsylvania'},
-  {name:'Chicago Booth', sub:'University of Chicago'},
-  {name:'Kellogg School of Management', sub:'Northwestern University'},
-  {name:'MIT Sloan', sub:'Massachusetts Institute of Technology'},
-  {name:'Columbia Business School', sub:'Columbia University'}
+  // US Schools
+  {name:'Harvard Business School', sub:'HBS · Cambridge, MA', region:'us'},
+  {name:'Stanford GSB', sub:'Stanford Graduate School of Business · CA', region:'us'},
+  {name:'The Wharton School', sub:'University of Pennsylvania · Philadelphia', region:'us'},
+  {name:'Chicago Booth', sub:'University of Chicago · Chicago, IL', region:'us'},
+  {name:'Kellogg School of Management', sub:'Northwestern University · Evanston, IL', region:'us'},
+  {name:'MIT Sloan', sub:'Massachusetts Institute of Technology · Cambridge, MA', region:'us'},
+  {name:'Columbia Business School', sub:'Columbia University · New York, NY', region:'us'},
+  {name:'Berkeley Haas', sub:'UC Berkeley · Berkeley, CA', region:'us'},
+  {name:'Michigan Ross', sub:'University of Michigan · Ann Arbor, MI', region:'us'},
+  {name:'Duke Fuqua', sub:'Duke University · Durham, NC', region:'us'},
+  {name:'Georgetown McDonough', sub:'Georgetown University · Washington DC', region:'us'},
+  {name:'Cornell Johnson', sub:'Cornell University · Ithaca, NY', region:'us'},
+  {name:'NYU Stern', sub:'New York University · New York, NY', region:'us'},
+  {name:'UT McCombs', sub:'University of Texas · Austin, TX', region:'us'},
+  // European Schools
+  {name:'INSEAD', sub:'France / Singapore · 1-year MBA · EUR', region:'eur'},
+  {name:'HEC Paris', sub:'Paris, France · 1-year MBA · EUR', region:'eur'},
+  {name:'IESE Business School', sub:'Barcelona, Spain · 1-year MBA · EUR', region:'eur'},
+  {name:'London Business School', sub:'London, UK · 1-year MBA · GBP', region:'gbp'},
+  {name:'Oxford Said', sub:'University of Oxford · UK · 1-year MBA · GBP', region:'gbp'}
 ];
 
 let selectedSchool='';
+let selectedRegion='us';
 
 function gateAuth(){
   const e=localStorage.getItem('zolve_auth_email');
@@ -137,7 +152,7 @@ function gateAuth(){
 function renderSchools(){
   const g=document.getElementById('schoolGrid');
   g.innerHTML=M7_SCHOOLS.map(s=>`
-    <button class="school-btn" onclick="selectSchool('${s.name.replace(/'/g,"&#39;")}')">
+    <button class="school-btn" onclick="selectSchool('${s.name.replace(/'/g,"&#39;")}','${s.region}')">
       <span class="school-name">${s.name}</span>
       <span class="school-sub">${s.sub}</span>
     </button>`).join('');
@@ -149,8 +164,9 @@ function showSection(id){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function selectSchool(name){
+function selectSchool(name, region){
   selectedSchool=name;
+  selectedRegion=region||'us';
   showSection('secProfile');
 }
 
@@ -165,10 +181,6 @@ function showNotice(id, msg, type){
 }
 
 async function callBackend(action, payload){
-  if(APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbylbvv0RImrCDyWnP0Jv5tMN8RLjh9Z0zs00AvPjlYL7BY1hEW3OxY2b0MEQUOFvWy4/exec'){
-    await new Promise(r=>setTimeout(r,400));
-    return {ok:true, demo:true};
-  }
   try{
     const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
     return await r.json();
@@ -195,6 +207,7 @@ async function saveProfile(){
   await callBackend('saveProfile', profile);
 
   localStorage.setItem('zolve_school', selectedSchool);
+  localStorage.setItem('zolve_school_region', selectedRegion);
   localStorage.setItem('zolve_school_status', 'approved');
   localStorage.setItem('zolve_profile', JSON.stringify(profile));
 

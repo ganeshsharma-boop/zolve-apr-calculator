@@ -32,6 +32,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .field-note{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
 .moratorium-detail{margin-top:10px;padding:14px;background:var(--orange-soft);border-radius:9px;font-size:12px;color:#7A3B0E;line-height:1.55;display:none}
 .moratorium-detail.show{display:block}
+.school-currency-note{background:#F0F7FF;border:1px solid #C8DFF8;border-radius:9px;padding:12px 14px;font-size:12px;color:#1A4A7A;margin-bottom:14px;display:none}
+.school-currency-note.show{display:block}
+.fx-input-row{display:flex;gap:8px;align-items:center}
+.fx-input-row input{flex:1}
+.fx-refresh-btn{padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;background:#fff;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0}
+.fx-refresh-btn:hover{border-color:var(--orange)}
+.info-box{background:#F0F7FF;border:1px solid #C8DFF8;border-radius:10px;padding:14px 16px;font-size:12px;color:#1A4A7A;line-height:1.6;margin-bottom:16px}
+.info-box strong{color:#0D2F52}
+
 .moratorium-detail label{font-size:12px;font-weight:600;color:#7A3B0E;display:block;margin-bottom:5px}
 .moratorium-detail input{width:100%;max-width:300px;padding:9px 12px;font-size:13px;border:1.5px solid #E8C5A8;border-radius:8px;background:#fff;font-family:inherit;margin-top:4px}
 .section-divider{margin:22px 0 10px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);padding-bottom:6px}
@@ -131,16 +140,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </nav>
 <header class="hero">
   <h1>Your <span style="color:var(--orange)">true loan cost</span>, in 30 seconds</h1>
-  <p>Built for M7 MBA students. Enter your loan exactly as it appears on your sanction letter to see the APR you actually pay.</p>
+  <p>Built for Indian students at top US &amp; European MBA programs. Enter your loan from your sanction letter to see the APR you actually pay.</p>
 </header>
 <main class="container">
   <div class="card">
     <h2>Loan inputs</h2>
     <p class="subtitle">Enter the numbers from your sanction letter. The more accurate your inputs, the closer the APR.</p>
     <div class="form-grid">
+      <div id="schoolCurrencyNote" class="school-currency-note"></div>
       <div class="input-group full">
         <label>Lender name <span class="hint">(for your records)</span></label>
-        <input type="text" id="lenderName" placeholder="e.g. your bank or NBFC">
+        <input type="text" id="lenderName" placeholder="e.g. HDFC Credila, SBI, Axis Bank, ICICI">
       </div>
       <div class="input-group">
         <label>Interest rate <span class="hint">% per year</span></label>
@@ -149,10 +159,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="input-group">
         <label>Total tenure <span class="hint">months</span></label>
         <input type="number" id="tenureMonths" value="120">
+        <div class="field-note">Most Indian lenders offer 10&ndash;15 year terms: <strong>10 yrs = 120 months &nbsp;|&nbsp; 12 yrs = 144 months &nbsp;|&nbsp; 15 yrs = 180 months</strong></div>
       </div>
       <div class="input-group">
         <label>Study / moratorium <span class="hint">months</span></label>
         <input type="number" id="moratoriumMonths" value="0">
+        <div class="field-note" id="moratoriumHint">Indian lenders typically allow <strong>36 months</strong> &mdash; 24 months study + 12 months grace for placement. Interest accrues throughout.</div>
       </div>
       <div class="input-group">
         <label>Repayment option during study</label>
@@ -178,6 +190,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       </div>
     </div>
     <div class="section-divider">Disbursal tranches</div>
+    <div id="trancheGuidance" class="info-box" style="margin-top:10px;margin-bottom:14px"></div>
     <p class="subtitle" style="margin-bottom:12px">Loans are usually drawn in stages, often once per semester. Enter each expected disbursal and the month it lands (month 1 = your first draw). Interest accrues on each tranche only from the month it is drawn.</p>
     <div class="tranche-head"><span></span><span>Amount (₹)</span><span>Month drawn</span><span></span></div>
     <div id="trancheContainer"></div>
@@ -200,13 +213,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="section-divider">Currency &amp; money transfer</div>
     <div class="form-grid">
       <div class="input-group">
-        <label>Rupee depreciation <span class="hint">% per year</span></label>
+        <label>Rupee depreciation vs <span id="deprCurrLabel">USD</span> <span class="hint">% per year</span></label>
         <input type="number" id="forexCAGR" step="0.01" value="4.25">
-        <div class="field-note">Historical average is roughly 4.0–4.5% per year. See the depreciation history below.</div>
+        <div class="field-note" id="deprNote">Historical average vs USD: ~4.25% per year. Auto-updated based on your school.</div>
       </div>
       <div class="input-group">
-        <label>Today's USD → INR rate</label>
-        <input type="number" id="usdInrToday" step="0.01" value="90">
+        <label id="fxRateLabel">Today's USD &#8594; INR rate <span class="hint" id="fxStatus" style="color:var(--success)"></span></label>
+        <div class="fx-input-row">
+          <input type="number" id="usdInrToday" step="0.01" placeholder="fetching live rate...">
+          <button class="fx-refresh-btn" onclick="fetchLiveRate()" title="Refresh">&#8635;</button>
+        </div>
+        <div class="field-note" id="fxNote">Fetching current rate automatically. Your bank adds Rs.0.50&ndash;1.00 markup over this spot rate.</div>
       </div>
       <div class="input-group">
         <label>Transfer markup <span class="hint">₹ per USD</span></label>
@@ -217,9 +234,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <label>How will you repay?</label>
         <div class="toggle-pills" id="repaySource">
           <button class="on" data-val="inr" onclick="setRepaySource('inr')">From INR income</button>
-          <button data-val="usd" onclick="setRepaySource('usd')">From USD income</button>
+          <button data-val="foreign" id="foreignRepayBtn" onclick="setRepaySource('foreign')">From <span id="foreignCurrName">USD</span> income</button>
         </div>
-        <div class="field-note">If you repay from dollars earned abroad, each EMI also carries the transfer markup back to India.</div>
+        <div class="field-note" id="repayNote">If you repay from foreign currency earned abroad, each EMI also carries the transfer markup back to India.</div>
       </div>
     </div>
     <button class="btn btn-primary" onclick="calculate()" style="margin-top:18px">Calculate true APR</button>
@@ -362,7 +379,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   </div>
 </main>
 <footer class="footer">
-  <p>Zolve · Education Loan APR Calculator. For informational purposes only.</p>
+  <p>Zolve · Top Global MBA Schools &mdash; US &amp; Europe. For informational purposes only.</p>
 </footer>
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylbvv0RImrCDyWnP0Jv5tMN8RLjh9Z0zs00AvPjlYL7BY1hEW3OxY2b0MEQUOFvWy4/exec';
@@ -499,7 +516,7 @@ const fmt=n=>'₹'+Math.round(n).toLocaleString('en-IN');
 // ============================================================
 // TRANCHE UI
 // ============================================================
-let trancheState=[{amount:5000000,month:1},{amount:5000000,month:7},{amount:5000000,month:13},{amount:5000000,month:19}];
+let trancheState=[{amount:0,month:1},{amount:0,month:7},{amount:0,month:13},{amount:0,month:19}];
 let repaySource='inr';
 
 function renderTranches(){
@@ -520,6 +537,7 @@ function setRepaySource(v){
   repaySource=v;
   document.querySelectorAll('#repaySource button').forEach(b=>b.classList.toggle('on', b.getAttribute('data-val')===v));
 }
+function getRepaySource(){ return repaySource==='foreign' ? (SCHOOL_CONFIG[currentRegion]||SCHOOL_CONFIG['us']).currency.toLowerCase() : repaySource; }
 function onMoratoriumTypeChange(){
   const t=document.getElementById('moratoriumType').value;
   document.getElementById('partialDetail').classList.toggle('show',t==='partial');
@@ -704,14 +722,106 @@ function trackBooking(){
 }
 
 // ============================================================
+// SCHOOL-AWARE SETUP
+// ============================================================
+var SCHOOL_CONFIG = {
+  us:  { currency:'USD', symbol:'USD', depr:4.25, moratorium:36, morHint:'Indian lenders typically allow <strong>36 months</strong> &mdash; 24 months study + 12 months grace for placement. Interest accrues throughout.', trancheNote:'<strong>2-year US MBA:</strong> Loans are typically drawn in 4 tranches &mdash; one per semester every 6 months. Enter each disbursal below with the month it lands (month 1 = first draw). Please enter your actual loan amount.', repayLabel:'USD', fxLabel:"Today's USD &rarr; INR rate", deprLabel:'USD', fxNote:'Fetching live USD/INR spot rate. Your bank adds Rs.0.50&ndash;1.00 markup over this.' },
+  eur: { currency:'EUR', symbol:'EUR', depr:4.0,  moratorium:24, morHint:'For 1-year European MBA programs, lenders typically allow <strong>24 months</strong> &mdash; 12 months study + 12 months grace for placement. Interest accrues throughout.', trancheNote:'<strong>1-year European MBA (EUR):</strong> Fees are charged in Euros. Most programs have 1&ndash;2 disbursals. Enter your actual loan amount &mdash; typical limits are lower than Rs.2 crore. Please add tranches based on your actual draw schedule.', repayLabel:'EUR', fxLabel:"Today's EUR &rarr; INR rate", deprLabel:'EUR', fxNote:'Fetching live EUR/INR spot rate. Your bank adds a markup over this spot rate.' },
+  gbp: { currency:'GBP', symbol:'GBP', depr:3.5,  moratorium:24, morHint:'For 1-year European MBA programs, lenders typically allow <strong>24 months</strong> &mdash; 12 months study + 12 months grace for placement. Interest accrues throughout.', trancheNote:'<strong>1-year European MBA (GBP):</strong> Fees are charged in British Pounds. Most programs have 1&ndash;2 disbursals. Enter your actual loan amount &mdash; typical limits are lower than Rs.2 crore. Please add tranches based on your actual draw schedule.', repayLabel:'GBP', fxLabel:"Today's GBP &rarr; INR rate", deprLabel:'GBP', fxNote:'Fetching live GBP/INR spot rate. Your bank adds a markup over this spot rate.' }
+};
+
+var currentRegion = 'us';
+
+function applySchoolConfig(region) {
+  currentRegion = region || 'us';
+  var cfg = SCHOOL_CONFIG[currentRegion] || SCHOOL_CONFIG['us'];
+
+  // Moratorium
+  document.getElementById('moratoriumMonths').value = cfg.moratorium;
+  document.getElementById('moratoriumHint').innerHTML = cfg.morHint;
+
+  // Depreciation
+  document.getElementById('forexCAGR').value = cfg.depr;
+  document.getElementById('deprCurrLabel').textContent = cfg.deprLabel;
+  document.getElementById('deprNote').textContent = 'Historical average vs ' + cfg.deprLabel + ': ~' + cfg.depr + '% per year. Auto-updated based on your school.';
+
+  // FX label
+  document.getElementById('fxRateLabel').innerHTML = cfg.fxLabel + ' <span class="hint" id="fxStatus" style="color:var(--success)"></span>';
+  document.getElementById('fxNote').textContent = cfg.fxNote;
+
+  // Repay toggle
+  document.getElementById('foreignCurrName').textContent = cfg.repayLabel;
+  document.getElementById('foreignRepayBtn').setAttribute('data-val', 'foreign');
+
+  // Tranche guidance
+  document.getElementById('trancheGuidance').innerHTML = cfg.trancheNote;
+
+  // School currency note
+  var note = document.getElementById('schoolCurrencyNote');
+  if (currentRegion === 'eur') {
+    note.innerHTML = '<strong>European school detected (EUR):</strong> Your school charges fees in Euros. Your INR loan is converted to EUR when fees are paid. Depreciation and live rate fields updated for EUR/INR.';
+    note.classList.add('show');
+  } else if (currentRegion === 'gbp') {
+    note.innerHTML = '<strong>European school detected (GBP):</strong> Your school charges fees in British Pounds. Your INR loan is converted to GBP when fees are paid. Depreciation and live rate fields updated for GBP/INR.';
+    note.classList.add('show');
+  } else {
+    note.classList.remove('show');
+  }
+
+  // Currency/depreciation tables
+  document.querySelector('.fx-table-usd').style.display = currentRegion === 'us' ? '' : 'none';
+  document.querySelector('.fx-table-eur').style.display = currentRegion === 'eur' ? '' : 'none';
+  document.querySelector('.fx-table-gbp').style.display = currentRegion === 'gbp' ? '' : 'none';
+
+  // Default tranches based on region
+  if (currentRegion === 'us') {
+    trancheState = [{amount:0,month:1},{amount:0,month:7},{amount:0,month:13},{amount:0,month:19}];
+  } else {
+    trancheState = [{amount:0,month:1},{amount:0,month:7}];
+  }
+  renderTranches();
+
+  // Fetch live rate for correct currency
+  fetchLiveRate();
+}
+
+// ============================================================
+// LIVE FX RATE
+// ============================================================
+function fetchLiveRate() {
+  var cfg = SCHOOL_CONFIG[currentRegion] || SCHOOL_CONFIG['us'];
+  var currency = cfg.currency;
+  var statusEl = document.getElementById('fxStatus');
+  var noteEl = document.getElementById('fxNote');
+  var input = document.getElementById('usdInrToday');
+  if (statusEl) { statusEl.textContent = 'fetching...'; statusEl.style.color = 'var(--muted)'; }
+  fetch('https://api.exchangerate-api.com/v4/latest/' + currency)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var rate = data.rates && data.rates.INR;
+      if (!rate) throw new Error('No INR rate');
+      input.value = rate.toFixed(2);
+      var updated = data.date || 'today';
+      if (statusEl) { statusEl.textContent = 'live rate as of ' + updated; statusEl.style.color = 'var(--success)'; }
+      noteEl.textContent = 'Live spot rate: Rs.' + rate.toFixed(2) + ' per ' + currency + '. Your bank adds Rs.0.50-1.00 markup - set that in Transfer markup below.';
+    })
+    .catch(function() {
+      if (statusEl) { statusEl.textContent = 'fetch failed - enter manually'; statusEl.style.color = 'var(--danger)'; }
+      input.placeholder = 'e.g. 84.50';
+      noteEl.textContent = 'Auto-fetch failed. Search "' + currency + ' to INR" on Google and enter the current rate here.';
+    });
+}
+
+// ============================================================
 // INIT
 // ============================================================
 window.addEventListener('load',()=>{
   if(!gateAuth()) return;
   document.getElementById('userEmail').textContent=localStorage.getItem('zolve_auth_email')||'';
   renderWatermark();
-  renderTranches();
   onMoratoriumTypeChange();
+  var region = localStorage.getItem('zolve_school_region') || 'us';
+  applySchoolConfig(region);
 });
 </script>
 </body>
