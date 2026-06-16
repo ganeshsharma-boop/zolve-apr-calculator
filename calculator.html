@@ -348,24 +348,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   </div>
   <div class="card guide">
     <h2>Why currency matters</h2>
-    <p class="subtitle">Your loan is in rupees, but your school is paid in dollars. Two separate currency costs raise your real APR above the advertised rate.</p>
-    <div class="depreciation-note">
-      <strong>1. Rupee depreciation.</strong> The Indian Rupee has weakened against the US Dollar by roughly 4.0% to 4.5% per year on average over the last five years, driven by structural trade deficits and the inflation gap between the two economies. Each later semester's fees therefore cost more rupees than the first, so you borrow more.
+    <p class="subtitle" id="currencySubtitle">Your loan is in rupees, but your school is paid in foreign currency. Two separate currency costs raise your real APR above the advertised rate.</p>
+    <div class="depreciation-note" id="currencyExplainer">
+      <strong>1. Rupee depreciation.</strong> The Indian Rupee weakens against major currencies over time due to structural trade deficits and inflation differentials. Each later semester costs more rupees, so you borrow more.
       <br><br>
-      <strong>2. Money-transfer charges.</strong> Every time money crosses the border there is a markup of roughly ₹0.50 to ₹1.00 per dollar over the spot rate. This applies when your loan's rupees are converted to pay the school, and again later if you earn in dollars and send money home to pay your EMIs.
+      <strong id="currencyTransferNote">2. Money-transfer charges.</strong> Every time money crosses the border there is a markup of roughly Rs.0.50 to Rs.1.00 per unit of foreign currency over the spot rate &mdash; both when your loan rupees are converted to pay the school, and when repatriating earnings to repay EMIs.
     </div>
-    <table class="fx-table">
-      <thead><tr><th>Year</th><th>Average INR per USD</th></tr></thead>
-      <tbody>
-        <tr><td>2021</td><td class="fx-rate">~73.94</td></tr>
-        <tr><td>2022</td><td class="fx-rate">~78.60</td></tr>
-        <tr><td>2023</td><td class="fx-rate">~82.57</td></tr>
-        <tr><td>2024</td><td class="fx-rate">~83.68</td></tr>
-        <tr><td>2025</td><td class="fx-rate">~89.00</td></tr>
-        <tr><td>2026 (Jan–May)</td><td class="fx-rate">~93.00–95.00</td></tr>
-      </tbody>
-    </table>
-    <p class="fx-disclaimer">Figures shown for educational purposes only, to illustrate the long-term trend. Past movement does not predict future rates.</p>
+    <div id="fxTableContainer">
+      <table class="fx-table fx-table-usd">
+        <thead><tr><th>Year</th><th>Avg INR per USD</th></tr></thead>
+        <tbody>
+          <tr><td>2020</td><td class="fx-rate">~74.10 <span style="color:var(--danger);font-size:11px">+2.5%</span></td></tr>
+          <tr><td>2021</td><td class="fx-rate">~73.92 <span style="color:var(--success);font-size:11px">-0.2%</span></td></tr>
+          <tr><td>2022</td><td class="fx-rate">~78.60 <span style="color:var(--danger);font-size:11px">+6.3%</span></td></tr>
+          <tr><td>2023</td><td class="fx-rate">~82.57 <span style="color:var(--danger);font-size:11px">+0.4%</span></td></tr>
+          <tr><td>2024</td><td class="fx-rate">~83.67 <span style="color:var(--danger);font-size:11px">+1.3%</span></td></tr>
+          <tr><td>2025</td><td class="fx-rate">~87.17 <span style="color:var(--danger);font-size:11px">+4.2%</span></td></tr>
+          <tr><td>2026 (Jan-Jun)</td><td class="fx-rate">~89.47-96.57 <span style="color:var(--danger);font-size:11px">~7%+ YTD</span></td></tr>
+        </tbody>
+      </table>
+      <table class="fx-table fx-table-eur" style="display:none">
+        <thead><tr><th>Year</th><th>Avg INR per EUR</th></tr></thead>
+        <tbody>
+          <tr><td>2021</td><td class="fx-rate">~84.64 <span style="color:var(--success);font-size:11px">-5.2%</span></td></tr>
+          <tr><td>2022</td><td class="fx-rate">~88.55 <span style="color:var(--danger);font-size:11px">+4.7%</span></td></tr>
+          <tr><td>2023</td><td class="fx-rate">~91.71 <span style="color:var(--danger);font-size:11px">+3.6%</span></td></tr>
+          <tr><td>2024</td><td class="fx-rate">~88.47 <span style="color:var(--success);font-size:11px">-3.6%</span></td></tr>
+          <tr><td>2025</td><td class="fx-rate">~105.55 <span style="color:var(--danger);font-size:11px">+19.2%</span></td></tr>
+          <tr><td>2026 (Jan-Jun)</td><td class="fx-rate">~104.00-108.50 <span style="color:var(--danger);font-size:11px">~1.2% YTD</span></td></tr>
+        </tbody>
+      </table>
+      <table class="fx-table fx-table-gbp" style="display:none">
+        <thead><tr><th>Year</th><th>Avg INR per GBP</th></tr></thead>
+        <tbody>
+          <tr><td>2021</td><td class="fx-rate">~100.20 <span style="color:var(--success);font-size:11px">-1.0%</span></td></tr>
+          <tr><td>2022</td><td class="fx-rate">~98.50 <span style="color:var(--success);font-size:11px">-1.7%</span></td></tr>
+          <tr><td>2023</td><td class="fx-rate">~103.40 <span style="color:var(--danger);font-size:11px">+5.0%</span></td></tr>
+          <tr><td>2024</td><td class="fx-rate">~106.20 <span style="color:var(--danger);font-size:11px">+2.7%</span></td></tr>
+          <tr><td>2025</td><td class="fx-rate">~112.30 <span style="color:var(--danger);font-size:11px">+5.7%</span></td></tr>
+          <tr><td>2026 (Jan-Jun)</td><td class="fx-rate">~115.00-120.50 <span style="color:var(--danger);font-size:11px">~4.5% YTD</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fx-disclaimer">Historical data for educational purposes. Past movement does not predict future rates. Source: World Bank, xe.com.</p>
   </div>
   <div class="card">
     <h2>Disclaimer</h2>
@@ -487,7 +512,7 @@ function computeLoan(p){
     return {principalAtRepayStart, emi, outflow, moratoriumPaid};
   }
   const baseRun=runLedger(false), fxRun=runLedger(true);
-  function inboundRemitTotal(emi){if(fxToday<=0||remit<=0||repaySource!=='usd')return 0;return (emi/fxToday)*remit*repay;}
+  function inboundRemitTotal(emi){if(fxToday<=0||remit<=0||repaySource==='inr')return 0;return (emi/fxToday)*remit*repay;}
   function aprFor(run, includeForex){
     const cf=new Array(totalMonths).fill(0);
     for(const t of financed) cf[t.month-1]+=t.base;
@@ -574,7 +599,7 @@ function calculate(){
   const upfrontFees=feeProcessing+feeInsurance+feeOther;
   const tranches=trancheState.filter(t=>t.amount>0);
   if(!annualRate||!totalMonths||!tranches.length){ alert('Please fill rate, tenure, and at least one tranche.'); return; }
-  const r=computeLoan({tranches,annualRate,totalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource});
+  const r=computeLoan({tranches,annualRate,totalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource:getRepaySource()});
   document.getElementById('aprValue').textContent=r.apr.toFixed(2)+'%';
   const diff=r.apr-annualRate;
   document.getElementById('aprCompare').textContent=diff>0.01?'+'+diff.toFixed(2)+' points above the advertised '+annualRate.toFixed(2)+'%':'matches the advertised rate';
@@ -585,7 +610,7 @@ function calculate(){
   document.getElementById('rRate').textContent=annualRate.toFixed(2)+'%';
   document.getElementById('rDisbursed').textContent=fmt(r.totalDisbursed);
   document.getElementById('rForex').textContent=fmt(r.forexSurcharge);
-  document.getElementById('rRemit').textContent=fmt(r.outboundRemit+r.inboundRemit)+(repaySource==='usd'?'':' (outbound only)');
+  document.getElementById('rRemit').textContent=fmt(r.outboundRemit+r.inboundRemit)+(getRepaySource()==='inr'?' (outbound only)':'');
   document.getElementById('rFees').textContent=fmt(upfrontFees);
   document.getElementById('rCap').textContent=moratoriumMonths>0?fmt(r.principalAtRepayStart):fmt(r.totalDisbursed)+' (no moratorium)';
   document.getElementById('rMoraInt').textContent=fmt(r.moratoriumInterestPaid);
@@ -633,9 +658,9 @@ function calculateAccelerated(){
   const tranches=trancheState.filter(t=>t.amount>0);
   const closeMonths=parseInt(document.getElementById('accelCloseMonths').value)||60;
   const gapMonths=parseInt(document.getElementById('accelGapMonths').value)||6;
-  const orig=computeLoan({tranches,annualRate,totalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource});
+  const orig=computeLoan({tranches,annualRate,totalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource:getRepaySource()});
   const newTotalMonths = moratoriumMonths + gapMonths + closeMonths;
-  const accel=computeAcceleratedLoan({tranches,annualRate,totalMonths:newTotalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource,gapMonths,closeMonths});
+  const accel=computeAcceleratedLoan({tranches,annualRate,totalMonths:newTotalMonths,moratoriumMonths,moratoriumType,partialAmount,upfrontFees,forexCAGR,remitPerUSD,usdInrToday,repaySource:getRepaySource(),gapMonths,closeMonths});
   document.getElementById('accelOrigApr').textContent=orig.apr.toFixed(2)+'%';
   document.getElementById('accelNewApr').textContent=accel.apr.toFixed(2)+'%';
   document.getElementById('accelEMI').textContent=fmt(accel.emi);
@@ -696,7 +721,7 @@ function computeAcceleratedLoan(p){
     return {principalAtRepayStart:balance, emi, outflow, moratoriumPaid};
   }
   const baseRun=runLedger(false), fxRun=runLedger(true);
-  function inboundRemitTotal(emi){if(fxToday<=0||remit<=0||repaySource!=='usd')return 0;return (emi/fxToday)*remit*closeMonths;}
+  function inboundRemitTotal(emi){if(fxToday<=0||remit<=0||repaySource==='inr')return 0;return (emi/fxToday)*remit*closeMonths;}
   function aprFor(run, includeForex){
     const cf=new Array(totalMonths).fill(0);
     for(const t of financed) cf[t.month-1]+=t.base;
@@ -772,6 +797,18 @@ function applySchoolConfig(region) {
   document.querySelector('.fx-table-usd').style.display = currentRegion === 'us' ? '' : 'none';
   document.querySelector('.fx-table-eur').style.display = currentRegion === 'eur' ? '' : 'none';
   document.querySelector('.fx-table-gbp').style.display = currentRegion === 'gbp' ? '' : 'none';
+
+  // Update "Why currency matters" dynamic text
+  var currSub = document.getElementById('currencySubtitle');
+  if (currSub) {
+    if (currentRegion === 'eur') {
+      currSub.textContent = 'Your loan is in rupees, but your school is paid in Euros. Two separate currency costs raise your real APR above the advertised rate.';
+    } else if (currentRegion === 'gbp') {
+      currSub.textContent = 'Your loan is in rupees, but your school is paid in British Pounds. Two separate currency costs raise your real APR above the advertised rate.';
+    } else {
+      currSub.textContent = 'Your loan is in rupees, but your school is paid in US Dollars. Two separate currency costs raise your real APR above the advertised rate.';
+    }
+  }
 
   // Default tranches based on region
   if (currentRegion === 'us') {
